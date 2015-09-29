@@ -31,6 +31,8 @@ bool GeomagicDriver::open(Searchable &config)
     {
         verbosity=config.check("verbosity",Value(0)).asInt(); 
         configured=true;
+        if (verbosity>0)
+            yInfo("*** Geomagic Driver: opened");
         return true;
     }
     else
@@ -46,7 +48,9 @@ bool GeomagicDriver::close()
 {
     if (configured)
     {
-        configured=false; 
+        configured=false;
+        if (verbosity>0)
+            yInfo("*** Geomagic Driver: closed");
         return true;
     }
     else

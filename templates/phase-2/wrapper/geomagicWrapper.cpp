@@ -55,6 +55,9 @@ bool GeomagicWrapper::open(Searchable &config)
     rpcPort.open(("/"+portStemName+"/rpc").c_str());
     rpcPort.setReader(*this);
 
+    if (verbosity>0)
+        yInfo("*** Geomagic Wrapper: opened");
+
     return true;
 }
 
@@ -63,9 +66,17 @@ bool GeomagicWrapper::open(Searchable &config)
 bool GeomagicWrapper::close()
 {
     if (isRunning())
-       askToStop();
+    {
+        askToStop();
+        if (verbosity>0)
+            yInfo("*** Geomagic Wrapper: stopped");
+    }
 
     detachAll();
+    
+    if (verbosity>0)
+        yInfo("*** Geomagic Wrapper: closed");
+
     return true;
 }
 
@@ -102,6 +113,9 @@ bool GeomagicWrapper::attachAll(const PolyDriverList &p)
         yError("*** Geomagic Wrapper: invalid device"); 
         return false;
     }
+
+    if (verbosity>0)
+        yInfo("*** Geomagic Wrapper: started");
 
     start();
     return true;
