@@ -11,7 +11,7 @@ list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 include(YarpPlugin)
 set(BUILD_SHARED_LIBS TRUE)
 
-yarp_configure_external_installation(geomagic WITH_PLUGINS)
+yarp_configure_external_installation(${PROJECT_NAME} WITH_PLUGINS)
 yarp_begin_plugin_library(geomagicmod)
     add_subdirectory(driver)
     add_subdirectory(wrapper)
@@ -21,4 +21,6 @@ install(TARGETS geomagicmod EXPORT geomagicmod
 		LIBRARY DESTINATION lib COMPONENT shlib
 		ARCHIVE DESTINATION lib
 		PUBLIC_HEADER DESTINATION include/geomagicmod COMPONENT dev)
+
+yarp_install(FILES conf/${PROJECT_NAME}.xml DESTINATION ${GEOMAGIC_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
 
