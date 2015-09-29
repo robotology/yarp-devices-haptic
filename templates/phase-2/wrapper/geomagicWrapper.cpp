@@ -50,8 +50,8 @@ bool GeomagicWrapper::open(Searchable &config)
 
     setRate(period);
 
-    statePort.open(("/"+portStemName+"/state").c_str());
-    forcePort.open(("/"+portStemName+"/force").c_str());
+    statePort.open(("/"+portStemName+"/state:o").c_str());
+    forcePort.open(("/"+portStemName+"/force:i").c_str());
     rpcPort.open(("/"+portStemName+"/rpc").c_str());
     rpcPort.setReader(*this);
 
