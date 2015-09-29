@@ -1,0 +1,28 @@
+# Copyright: (C) 2015 iCub Facility
+# Authors: Ugo Pattacini <ugo.pattacini@iit.it>
+# CopyPolicy: Released under the terms of the GNU GPL v2.0.
+
+cmake_minimum_required(VERSION 2.8.9)
+project(geomagic)
+
+find_package(YARP REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+
+include(YarpPlugin)
+set(BUILD_SHARED_LIBS TRUE)
+
+yarp_configure_external_installation(geomagic WITH_PLUGINS)
+yarp_begin_plugin_library(geomagicmod)
+    add_subdirectory(driver)
+    add_subdirectory(wrapper)
+yarp_end_plugin_library(geomagicmod)
+
+yarp_add_plugin_yarpdev_executable(geomagicmoddev geomagicmod)
+target_link_libraries(geomagicmoddev geomagicmod ${YARP_LIBRARIES})
+
+install(TARGETS geomagicmoddev DESTINATION bin)
+install(TARGETS geomagicmod EXPORT geomagicmod
+		LIBRARY DESTINATION lib COMPONENT shlib
+		ARCHIVE DESTINATION lib
+		PUBLIC_HEADER DESTINATION include/geomagicmod COMPONENT dev)
+
