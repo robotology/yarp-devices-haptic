@@ -18,8 +18,8 @@ using namespace yarp::math;
 
 
 /*********************************************************************/
-bool GeomagicDriver::GeomagicDriver() : configured(false), verbosity(0),
-                                        T(eye(4,4))
+GeomagicDriver::GeomagicDriver() : configured(false), verbosity(0),
+                                   T(eye(4,4))
 {
 }
 
