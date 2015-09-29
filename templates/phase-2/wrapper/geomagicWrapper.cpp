@@ -14,8 +14,8 @@
 
 #include "geomagicWrapper.h"
 
-#define GEOMAGIC_WRAPPER_DEFAULT_PORTSTEMNAME   "geomagic"
-#define GEOMAGIC_WRAPPER_DEFAULT_PERIOD         20          // [ms]
+#define GEOMAGIC_WRAPPER_DEFAULT_NAME       "geomagic"
+#define GEOMAGIC_WRAPPER_DEFAULT_PERIOD     20          // [ms]
 
 using namespace std;
 using namespace yarp::os;
@@ -42,8 +42,8 @@ GeomagicWrapper::~GeomagicWrapper()
 /*********************************************************************/
 bool GeomagicWrapper::open(Searchable &config)
 {
-    portStemName=config.check("port-stemname",
-                              Value(GEOMAGIC_WRAPPER_DEFAULT_PORTSTEMNAME)).asString().c_str();
+    portStemName=config.check("name",
+                              Value(GEOMAGIC_WRAPPER_DEFAULT_NAME)).asString().c_str();
     int period=config.check("period",
                             Value(GEOMAGIC_WRAPPER_DEFAULT_PERIOD)).asInt();
     verbosity=config.check("verbosity",Value(0)).asInt();
