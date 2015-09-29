@@ -17,10 +17,6 @@ yarp_begin_plugin_library(geomagicmod)
     add_subdirectory(wrapper)
 yarp_end_plugin_library(geomagicmod)
 
-yarp_add_plugin_yarpdev_executable(geomagicmoddev geomagicmod)
-target_link_libraries(geomagicmoddev geomagicmod ${YARP_LIBRARIES})
-
-install(TARGETS geomagicmoddev DESTINATION bin)
 install(TARGETS geomagicmod EXPORT geomagicmod
 		LIBRARY DESTINATION lib COMPONENT shlib
 		ARCHIVE DESTINATION lib
