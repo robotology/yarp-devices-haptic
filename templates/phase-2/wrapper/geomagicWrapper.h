@@ -38,10 +38,12 @@ protected:
 
     yarp::os::BufferedPort<yarp::os::Bottle> statePort;
     yarp::os::BufferedPort<yarp::os::Bottle> forcePort;
-    yarp::os::Port                           rpcPort;
+    yarp::os::Port                           rpcPort;    
     
     yarp::os::Stamp stamp;
-    IGeomagic *device;
+
+    yarp::dev::PolyDriver driver;
+    geomagic::IGeomagic *device;
 
     yarp::sig::Vector force;
     bool applyForce;
@@ -58,7 +60,7 @@ public:
     bool open(yarp::os::Searchable &config);
     bool close();
 
-    void attach(IGeomagic *dev);
+    void attach(geomagic::IGeomagic *dev);
     void detach();
 
     bool attachAll(const yarp::dev::PolyDriverList &p);

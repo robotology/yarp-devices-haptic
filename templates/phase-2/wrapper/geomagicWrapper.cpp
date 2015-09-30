@@ -23,6 +23,7 @@ using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
 
+using namespace geomagic;
 
 /*********************************************************************/
 GeomagicWrapper::GeomagicWrapper() : RateThread(GEOMAGIC_WRAPPER_DEFAULT_PERIOD),
@@ -58,6 +59,26 @@ bool GeomagicWrapper::open(Searchable &config)
     if (verbosity>0)
         yInfo("*** Geomagic Wrapper: opened");
 
+    if (config.check("subdevice"))
+    {
+        Property p(config.toString().c_str());
+        p.setMonitor(config.getMonitor(),"subdevice");
+        p.unput("device");
+        p.put("device",config.find("subdevice").asString());
+
+        if (driver.open(p))
+        {
+            IGeomagic *g;
+            driver.view(g);
+            attach(g);
+        }
+        else
+        {
+            yError("*** Geomagic Wrapper: failed to open the driver!");
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -73,6 +94,9 @@ bool GeomagicWrapper::close()
     }
 
     detachAll();
+
+    if (driver.isValid())
+        driver.close();
     
     if (verbosity>0)
         yInfo("*** Geomagic Wrapper: closed");
@@ -85,6 +109,10 @@ bool GeomagicWrapper::close()
 void GeomagicWrapper::attach(IGeomagic *dev)
 {
     device=dev;
+
+    start();
+    if (verbosity>0)
+        yInfo("*** Geomagic Wrapper: started");
 }
 
 
@@ -114,10 +142,10 @@ bool GeomagicWrapper::attachAll(const PolyDriverList &p)
         return false;
     }
 
+    start();
     if (verbosity>0)
         yInfo("*** Geomagic Wrapper: started");
-
-    start();
+    
     return true;
 }
 

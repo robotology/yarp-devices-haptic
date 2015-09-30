@@ -21,7 +21,7 @@
  * Geomagic driver
  */
 class GeomagicDriver : public yarp::dev::DeviceDriver,
-                       public IGeomagic
+                       public geomagic::IGeomagic
 {
 protected:
     bool configured;
