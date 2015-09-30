@@ -49,16 +49,6 @@ bool GeomagicWrapper::open(Searchable &config)
                             Value(GEOMAGIC_WRAPPER_DEFAULT_PERIOD)).asInt();
     verbosity=config.check("verbosity",Value(0)).asInt();
 
-    setRate(period);
-
-    statePort.open(("/"+portStemName+"/state:o").c_str());
-    forcePort.open(("/"+portStemName+"/force:i").c_str());
-    rpcPort.open(("/"+portStemName+"/rpc").c_str());
-    rpcPort.setReader(*this);
-
-    if (verbosity>0)
-        yInfo("*** Geomagic Wrapper: opened");
-
     if (config.check("subdevice"))
     {
         Property p(config.toString().c_str());
@@ -78,6 +68,16 @@ bool GeomagicWrapper::open(Searchable &config)
             return false;
         }
     }
+
+    setRate(period);
+
+    statePort.open(("/"+portStemName+"/state:o").c_str());
+    forcePort.open(("/"+portStemName+"/force:i").c_str());
+    rpcPort.open(("/"+portStemName+"/rpc").c_str());
+    rpcPort.setReader(*this);
+
+    if (verbosity>0)
+        yInfo("*** Geomagic Wrapper: opened");
 
     return true;
 }
