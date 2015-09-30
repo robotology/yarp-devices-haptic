@@ -70,11 +70,6 @@ bool GeomagicWrapper::open(Searchable &config)
         }
     }    
 
-    statePort.open(("/"+portStemName+"/state:o").c_str());
-    forcePort.open(("/"+portStemName+"/force:i").c_str());
-    rpcPort.open(("/"+portStemName+"/rpc").c_str());
-    rpcPort.setReader(*this);
-
     if (verbosity>0)
         yInfo("*** Geomagic Wrapper: opened");
 
@@ -221,6 +216,11 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
 /*********************************************************************/
 bool GeomagicWrapper::threadInit()
 {
+    statePort.open(("/"+portStemName+"/state:o").c_str());
+    forcePort.open(("/"+portStemName+"/force:i").c_str());
+    rpcPort.open(("/"+portStemName+"/rpc").c_str());
+    rpcPort.setReader(*this);
+
     return true;
 }
 
