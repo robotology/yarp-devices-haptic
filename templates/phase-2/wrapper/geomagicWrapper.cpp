@@ -45,9 +45,10 @@ bool GeomagicWrapper::open(Searchable &config)
 {
     portStemName=config.check("name",
                               Value(GEOMAGIC_WRAPPER_DEFAULT_NAME)).asString().c_str();
+    verbosity=config.check("verbosity",Value(0)).asInt();
     int period=config.check("period",
                             Value(GEOMAGIC_WRAPPER_DEFAULT_PERIOD)).asInt();
-    verbosity=config.check("verbosity",Value(0)).asInt();
+    setRate(period);
 
     if (config.check("subdevice"))
     {
@@ -67,9 +68,7 @@ bool GeomagicWrapper::open(Searchable &config)
             yError("*** Geomagic Wrapper: failed to open the driver!");
             return false;
         }
-    }
-
-    setRate(period);
+    }    
 
     statePort.open(("/"+portStemName+"/state:o").c_str());
     forcePort.open(("/"+portStemName+"/force:i").c_str());
