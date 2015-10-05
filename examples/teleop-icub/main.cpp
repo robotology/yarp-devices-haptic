@@ -1,6 +1,11 @@
-// Copyright: (C) 2015 iCub Facility, Istituto Italiano di Tecnologia
-// Authors: Ugo Pattacini
-// CopyPolicy: Released under the terms of the GNU GPL v2.0.
+// -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+
+/*
+ * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
+ * Author: Ugo Pattacini
+ * CopyPolicy: Released under the terms of the LGPLv2.1 or later.
+ *
+ */
 
 #include <string>
 #include <cmath>
