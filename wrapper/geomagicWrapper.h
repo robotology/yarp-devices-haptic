@@ -14,7 +14,7 @@
 
 #include <yarp/os/RateThread.h>
 #include <yarp/os/PortReader.h>
-#include <yarp/os/Port.h>
+#include <yarp/os/RpcServer.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Stamp.h>
@@ -25,20 +25,20 @@
 #include "IGeomagic.h"
 
 /**
- * Geomagic driver
+ * Geomagic wrapper
  */
 class GeomagicWrapper : public yarp::dev::DeviceDriver,
                         public yarp::dev::IMultipleWrapper,
                         public yarp::os::RateThread,
                         public yarp::os::PortReader
 {
-protected:    
+protected:
     std::string portStemName;
     int verbosity;
 
     yarp::os::BufferedPort<yarp::os::Bottle> statePort;
-    yarp::os::BufferedPort<yarp::os::Bottle> forcePort;
-    yarp::os::Port                           rpcPort;    
+    yarp::os::BufferedPort<yarp::os::Bottle> feedbackPort;
+    yarp::os::RpcServer                      rpcPort;
     
     yarp::os::Stamp stamp;
 

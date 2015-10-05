@@ -246,7 +246,7 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
 bool GeomagicWrapper::threadInit()
 {
     statePort.open(("/"+portStemName+"/state:o").c_str());
-    forcePort.open(("/"+portStemName+"/feedback:i").c_str());
+    feedbackPort.open(("/"+portStemName+"/feedback:i").c_str());
     rpcPort.open(("/"+portStemName+"/rpc").c_str());
     rpcPort.setReader(*this);
 
@@ -258,11 +258,11 @@ bool GeomagicWrapper::threadInit()
 void GeomagicWrapper::threadRelease()
 {
     statePort.interrupt();
-    forcePort.interrupt();
+    feedbackPort.interrupt();
     rpcPort.interrupt();
 
     statePort.close();
-    forcePort.close();
+    feedbackPort.close();
     rpcPort.close();
 }
 
@@ -284,7 +284,7 @@ void GeomagicWrapper::run()
         statePort.setEnvelope(stamp);
         statePort.writeStrict();
 
-        if (Bottle *fdbck=forcePort.read(false))
+        if (Bottle *fdbck=feedbackPort.read(false))
         {
             if (fdbck->size()>=3)
             {
