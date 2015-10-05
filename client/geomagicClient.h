@@ -28,6 +28,7 @@ class StatePort : public yarp::os::BufferedPort<yarp::os::Bottle>
 {
     GeomagicClient *client;
     void onRead(yarp::os::Bottle &state);
+
 public:
     StatePort() : client(NULL)
     {
@@ -36,7 +37,7 @@ public:
 
 	void setClient(GeomagicClient *client_)
 	{
-		this->client=client;
+		this->client=client_;
 	}
 };
 
