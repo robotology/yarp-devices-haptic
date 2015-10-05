@@ -7,8 +7,10 @@ project(geomagic)
 
 find_package(YARP REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include(YarpPlugin)
+include(${PROJECT_NAME}Helpers)
 set(BUILD_SHARED_LIBS TRUE)
 
 yarp_configure_external_installation(${PROJECT_NAME} WITH_PLUGINS)
@@ -23,16 +25,7 @@ install(TARGETS geomagicmod EXPORT geomagicmod
 		ARCHIVE DESTINATION lib
 		PUBLIC_HEADER DESTINATION include/geomagicmod COMPONENT dev)
 
-file(WRITE  ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "# Copyright: (C) 2015 iCub Facility\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "# Authors: Ugo Pattacini <ugo.pattacini@iit.it>\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "# CopyPolicy: Released under the terms of the GNU GPL v2.0.\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "if(NOT geomagic_FOUND)\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "    set(geomagic_FOUND TRUE)\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake "endif()\n")
-
-yarp_install(FILES conf/${PROJECT_NAME}.xml                          DESTINATION ${GEOMAGIC_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
-yarp_install(FILES interface/IGeomagic.h                             DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
-yarp_install(FILES ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake DESTINATION ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR})
+yarp_install(FILES conf/${PROJECT_NAME}.xml                                DESTINATION ${GEOMAGIC_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
+yarp_install(FILES interface/IGeomagic.h                                   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
+yarp_install(FILES ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake DESTINATION ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR})
 
