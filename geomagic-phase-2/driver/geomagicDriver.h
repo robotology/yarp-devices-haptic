@@ -85,6 +85,19 @@ public:
     bool getOrientation(yarp::sig::Vector &rpy);
     bool getButtons(yarp::sig::Vector &buttons);
 
+    // There are 2 possibilities to control forces on motors:
+    // - set the current force as Cartesian coordinated vector.
+    //   This is the primary method for sending forces to the device.
+    //   Setting the current force causes that force to be commanded at end
+    //   of the frame. In this case, the 3 element double vector expresses
+    //   the force in Newton. The max positive and negative value for
+    //   the forces are returned by 'getMaxForceFeedback' function.
+    // - set the current torque as a joint coordinated vector for
+    //   the first three joints of the Touch device.
+    //   Setting the current joint torque causes that torque to be commanded
+    //   at end of the frame. In this case, the 3 element double vector
+    //   expresses the force in milliNewton for meter. The max force value
+    //   is returned from 'getMaxForceFeedback' function.
     bool isCartesianForceModeEnabled();
     bool getMaxForceFeedback(yarp::sig::Vector &force);
     void setJointTorqueMode();
