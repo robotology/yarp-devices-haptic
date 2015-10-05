@@ -23,8 +23,19 @@ using namespace yarp::sig;
 
 using namespace geomagic;
 
+
 /*********************************************************************/
-GeomagicClient::GeomagicClient() : state(8,0.0)
+void StatePort::onRead(Bottle &state)
+{
+    LockGuard lg(client.mutex);
+    state.write(client.state);
+    getEnvelope(client.stamp);
+    return true;
+}
+
+
+/*********************************************************************/
+GeomagicClient::GeomagicClient() : statePort(this), state(8,0.0)
 {
 }
 
@@ -51,7 +62,6 @@ bool GeomagicClient::open(Searchable &config)
     statePort.open((local+"/state:i").c_str());
     feedbackPort.open((local+"/feedback:o").c_str());
     rpcPort.open((local+"/rpc").c_str());
-    statePort.setReader(*this);
 
     bool ok=true;
     ok|=Network::connect((remote+"/state:o").c_str(),statePort.getName().c_str(),"udp");
@@ -85,20 +95,6 @@ bool GeomagicClient::close()
     if (verbosity>0)
         yInfo("*** Geomagic Client: closed");
 
-    return true;
-}
-
-
-/*********************************************************************/
-bool GeomagicClient::read(ConnectionReader &connection)
-{
-    Bottle state;
-    if (!state.read(connection))
-        return false;
-
-    LockGuard lg(mutex);
-    state.write(this->state);
-    statePort.getEnvelope(stamp);
     return true;
 }
 

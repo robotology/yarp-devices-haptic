@@ -10,7 +10,6 @@
 #ifndef __GEOMAGIC_CLIENT__
 #define __GEOMAGIC_CLIENT__
 
-#include <yarp/os/PortReader.h>
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Bottle.h>
@@ -23,6 +22,19 @@
 
 #include "IGeomagic.h"
 
+class GeomagicClient;
+
+class StatePort : public yarp::dev::BufferedPort<yarp::dev::Bottle>
+{
+    GeomagicClient &client;
+    void onRead(Bottle &state);
+public:
+    StatePort(GeomagicClient &client_) : client(client_)
+    {
+        useCallback();
+    }
+};
+
 /**
  * Geomagic client
  */
@@ -34,15 +46,14 @@ class GeomagicClient : public yarp::dev::DeviceDriver,
 protected:    
     int verbosity;
 
-    yarp::os::BufferedPort<yarp::os::Bottle> statePort;
+    friend StatePort;
+    StatePort                                statePort;
     yarp::os::BufferedPort<yarp::os::Bottle> feedbackPort;
     yarp::os::RpcClient                      rpcPort;    
     
     yarp::sig::Vector state;
     yarp::os::Stamp stamp;
     yarp::os::Mutex mutex;
-
-    bool read(yarp::os::ConnectionReader &connection);
 
 public:
     GeomagicClient();
