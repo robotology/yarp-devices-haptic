@@ -8,7 +8,6 @@
  */
 
 #include <yarp/os/Log.h>
-#include <yarp/os/Vocab.h>
 #include <yarp/sig/Matrix.h>
 #include <yarp/math/Math.h>
 
@@ -166,13 +165,10 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
     {
         if (tag==geomagic::set_transformation)
         {
-            if (cmd.size()>=1+4*4)
+            if (cmd.size()>=2)
             {
-                Matrix T(4,4);
-                for (int r=0; r<T.rows(); r++)
-                    for (int c=0; c<T.cols(); c++)
-                        T(r,c)=cmd.get(1+4*r+c).asDouble();
-
+                Matrix T;
+                cmd.get(1).asList()->write(T);
                 if (device->setTransformation(T))
                     rep.addVocab(geomagic::ack);
                 else
@@ -185,9 +181,7 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
             if (device->getTransformation(T))
             {
                 rep.addVocab(geomagic::ack);
-                for (int r=0; r<T.rows(); r++)
-                    for (int c=0; c<T.cols(); c++)
-                        rep.addDouble(T(r,c));
+                rep.addList().read(T);
             }
             else
                 rep.addVocab(geomagic::nack);

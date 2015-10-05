@@ -239,7 +239,7 @@ bool GeomagicDriver::setJointTorqueMode()
 
 
 /*********************************************************************/
-bool GeomagicDriver::getMaxFeedback(yarp::sig::Vector &max)
+bool GeomagicDriver::getMaxFeedback(Vector &max)
 {
     max.resize(3);
     if (hDeviceData.m_isForce) {
@@ -257,7 +257,7 @@ bool GeomagicDriver::getMaxFeedback(yarp::sig::Vector &max)
 
 
 /*********************************************************************/
-bool GeomagicDriver::setFeedback(const yarp::sig::Vector &fdbck)
+bool GeomagicDriver::setFeedback(const Vector &fdbck)
 {
     if (fdbck.size()<3)
         return false;

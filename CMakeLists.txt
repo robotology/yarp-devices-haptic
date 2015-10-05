@@ -15,6 +15,7 @@ yarp_configure_external_installation(${PROJECT_NAME} WITH_PLUGINS)
 yarp_begin_plugin_library(geomagicmod)
     add_subdirectory(driver)
     add_subdirectory(wrapper)
+    add_subdirectory(client)
 yarp_end_plugin_library(geomagicmod)
 
 install(TARGETS geomagicmod EXPORT geomagicmod
