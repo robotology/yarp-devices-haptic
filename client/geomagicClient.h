@@ -24,22 +24,26 @@
 
 class GeomagicClient;
 
-class StatePort : public yarp::dev::BufferedPort<yarp::dev::Bottle>
+class StatePort : public yarp::os::BufferedPort<yarp::os::Bottle>
 {
-    GeomagicClient &client;
-    void onRead(Bottle &state);
+    GeomagicClient *client;
+    void onRead(yarp::os::Bottle &state);
 public:
-    StatePort(GeomagicClient &client_) : client(client_)
+    StatePort() : client(NULL)
     {
         useCallback();
     }
+
+	void setClient(GeomagicClient *client_)
+	{
+		this->client=client;
+	}
 };
 
 /**
  * Geomagic client
  */
 class GeomagicClient : public yarp::dev::DeviceDriver,
-                       public yarp::os::PortReader,
                        public yarp::dev::IPreciselyTimed,
                        public geomagic::IGeomagic
 {
