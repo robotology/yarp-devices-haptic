@@ -13,6 +13,7 @@
 #include <yarp/math/Math.h>
 
 #include "geomagicWrapper.h"
+#include "common.h"
 
 #define GEOMAGIC_WRAPPER_DEFAULT_NAME       "geomagic"
 #define GEOMAGIC_WRAPPER_DEFAULT_PERIOD     20          // [ms]
@@ -27,7 +28,7 @@ using namespace geomagic;
 
 /*********************************************************************/
 GeomagicWrapper::GeomagicWrapper() : RateThread(GEOMAGIC_WRAPPER_DEFAULT_PERIOD),
-                                     device(NULL), applyForce(false), force(3,0.0)
+                                     device(NULL), applyFdbck(false), fdbck(3,0.0)
 {
 }
 
@@ -155,59 +156,87 @@ bool GeomagicWrapper::detachAll()
 /*********************************************************************/
 bool GeomagicWrapper::read(ConnectionReader &connection)
 {
-    Bottle in;
-    if (!in.read(connection))
+    Bottle cmd;
+    if (!cmd.read(connection))
         return false;
+    int tag=cmd.get(0).asVocab();
 
-    Bottle out;
+    Bottle rep;
     if (device!=NULL)
     {
-        if (in.get(0).asVocab()==Vocab::encode("sett"))
+        if (tag==geomagic::set_transformation)
         {
-            if (in.size()>=1+4*4)
+            if (cmd.size()>=1+4*4)
             {
                 Matrix T(4,4);
                 for (int r=0; r<T.rows(); r++)
                     for (int c=0; c<T.cols(); c++)
-                        T(r,c)=in.get(1+4*r+c).asDouble();
+                        T(r,c)=cmd.get(1+4*r+c).asDouble();
 
                 if (device->setTransformation(T))
-                    out.addVocab(Vocab::encode("ack"));
+                    rep.addVocab(geomagic::ack);
                 else
-                    out.addVocab(Vocab::encode("nack"));
+                    rep.addVocab(geomagic::nack);
             }
         }
-        else if (in.get(0).asVocab()==Vocab::encode("gett"))
+        else if (tag==geomagic::get_transformation)
         {
             Matrix T;
             if (device->getTransformation(T))
             {
-                out.addVocab(Vocab::encode("ack"));
+                rep.addVocab(geomagic::ack);
                 for (int r=0; r<T.rows(); r++)
                     for (int c=0; c<T.cols(); c++)
-                        out.addDouble(T(r,c));
+                        rep.addDouble(T(r,c));
             }
             else
-                out.addVocab(Vocab::encode("nack"));
+                rep.addVocab(geomagic::nack);
         }
-        else if (in.get(0).asVocab()==Vocab::encode("fon"))
+        else if (tag==geomagic::stop_feedback)
         {
-            applyForce=true;
-            out.addVocab(Vocab::encode("ack"));
+            applyFdbck=false;
+            rep.addVocab(geomagic::ack);
         }
-        else if (in.get(0).asVocab()==Vocab::encode("foff"))
+        else if (tag==geomagic::is_cartesian)
         {
-            applyForce=false;
-            out.addVocab(Vocab::encode("ack"));
+            bool ret;
+            if (device->isCartesianForceModeEnabled(ret))
+            {
+                rep.addVocab(geomagic::ack);
+                rep.addInt(ret?1:0);
+            }
+            else
+                rep.addVocab(geomagic::nack);
+        }
+        else if (tag==geomagic::set_cartesian)
+        {
+            rep.addVocab(device->setCartesianForceMode()?
+                         geomagic::ack:geomagic::nack);
+        }
+        else if (tag==geomagic::set_joint)
+        {
+            rep.addVocab(device->setJointTorqueMode()?
+                         geomagic::ack:geomagic::nack);
+        }
+        else if (tag==geomagic::get_max)
+        {
+            Vector max;
+            if (device->getMaxFeedback(max))
+            {
+                rep.addVocab(geomagic::ack);
+                rep.addList().read(max);
+            }
+            else
+                rep.addVocab(geomagic::nack);
         }
     }
 
-    if (out.size()==0)
-        out.addVocab(Vocab::encode("nack"));
+    if (rep.size()==0)
+        rep.addVocab(geomagic::nack);
 
     ConnectionWriter *writer=connection.getWriter();
     if (writer!=NULL)
-        out.write(*writer);
+        rep.write(*writer);
 
     return true;
 }
@@ -217,7 +246,7 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
 bool GeomagicWrapper::threadInit()
 {
     statePort.open(("/"+portStemName+"/state:o").c_str());
-    forcePort.open(("/"+portStemName+"/force:i").c_str());
+    forcePort.open(("/"+portStemName+"/feedback:i").c_str());
     rpcPort.open(("/"+portStemName+"/rpc").c_str());
     rpcPort.setReader(*this);
 
@@ -255,19 +284,20 @@ void GeomagicWrapper::run()
         statePort.setEnvelope(stamp);
         statePort.writeStrict();
 
-        if (Bottle *force=forcePort.read(false))
+        if (Bottle *fdbck=forcePort.read(false))
         {
-            if (force->size()>=3)
+            if (fdbck->size()>=3)
             {
-                this->force[0]=force->get(0).asDouble();
-                this->force[1]=force->get(1).asDouble();
-                this->force[2]=force->get(2).asDouble();
+                this->fdbck[0]=fdbck->get(0).asDouble();
+                this->fdbck[1]=fdbck->get(1).asDouble();
+                this->fdbck[2]=fdbck->get(2).asDouble();
             }
+
+            applyFdbck=true;
         }
 
-        if (applyForce)
-            device->setForceFeedback(force);
+        if (applyFdbck)
+            device->setFeedback(fdbck);
     }
 }
-
 

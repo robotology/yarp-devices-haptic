@@ -211,65 +211,66 @@ bool GeomagicDriver::getButtons(Vector &buttons)
 
 
 /*********************************************************************/
-bool GeomagicDriver::isCartesianForceModeEnabled()
+bool GeomagicDriver::isCartesianForceModeEnabled(bool &ret)
 {
-    return hDeviceData.m_isForce;
+    ret=hDeviceData.m_isForce;
+    return true;
 }
 
 
 /*********************************************************************/
-bool GeomagicDriver::getMaxForceFeedback(yarp::sig::Vector &force)
+bool GeomagicDriver::setCartesianForceMode()
 {
-    if (force.size() < 3)
-        return false;
+    if (verbosity>0)
+        yInfo("*** Geomagic Driver: Cartesian Force mode enabled");
+    hDeviceData.m_isForce=true;
+    return true;
+}
 
+
+/*********************************************************************/
+bool GeomagicDriver::setJointTorqueMode()
+{
+    if (verbosity>0)
+        yInfo("*** Geomagic Driver: Joint Torque mode enabled");
+    hDeviceData.m_isForce=false;
+    return true;
+}
+
+
+/*********************************************************************/
+bool GeomagicDriver::getMaxFeedback(yarp::sig::Vector &max)
+{
+    max.resize(3);
     if (hDeviceData.m_isForce) {
-        force[0] = maxForceMagnitude;
-        force[1] = maxForceMagnitude;
-        force[2] = maxForceMagnitude;
+        max[0]= maxForceMagnitude;
+        max[1]=maxForceMagnitude;
+        max[2]=maxForceMagnitude;
     }
     else {
-        force[0] = MAX_JOINT_TORQUE_0;
-        force[1] = MAX_JOINT_TORQUE_1;
-        force[2] = MAX_JOINT_TORQUE_2;
+        max[0]=MAX_JOINT_TORQUE_0;
+        max[1]=MAX_JOINT_TORQUE_1;
+        max[2]=MAX_JOINT_TORQUE_2;
     }
     return true;
 }
 
 
 /*********************************************************************/
-void GeomagicDriver::setJointTorqueMode()
+bool GeomagicDriver::setFeedback(const yarp::sig::Vector &fdbck)
 {
-    if (verbosity>0)
-        yInfo("*** Geomagic Driver: Joint Torque mode enabled");
-    hDeviceData.m_isForce = false;
-}
-
-
-/*********************************************************************/
-void GeomagicDriver::setCartesianForceMode()
-{
-    if (verbosity>0)
-        yInfo("*** Geomagic Driver: Cartesian Force mode enabled");
-    hDeviceData.m_isForce = true;
-}
-
-
-/*********************************************************************/
-bool GeomagicDriver::setForceFeedback(const Vector &force)
-{
-    if (force.size() < 3)
+    if (fdbck.size()<3)
         return false;
 
     if (hDeviceData.m_isForce) {
-        hDeviceData.m_forceValues[0] = this->min(force[0], maxForceMagnitude);
-        hDeviceData.m_forceValues[1] = this->min(force[1], maxForceMagnitude);
-        hDeviceData.m_forceValues[2] = this->min(force[2], maxForceMagnitude);
+        hDeviceData.m_forceValues[0]=this->min(fdbck[0],maxForceMagnitude);
+        hDeviceData.m_forceValues[1]=this->min(fdbck[1],maxForceMagnitude);
+        hDeviceData.m_forceValues[2]=this->min(fdbck[2],maxForceMagnitude);
     }
     else {
-        hDeviceData.m_forceValues[0] = this->min(force[0], MAX_JOINT_TORQUE_0);
-        hDeviceData.m_forceValues[1] = this->min(force[1], MAX_JOINT_TORQUE_1);
-        hDeviceData.m_forceValues[2] = this->min(force[2], MAX_JOINT_TORQUE_2);
+        hDeviceData.m_forceValues[0]=this->min(fdbck[0],MAX_JOINT_TORQUE_0);
+        hDeviceData.m_forceValues[1]=this->min(fdbck[1],MAX_JOINT_TORQUE_1);
+        hDeviceData.m_forceValues[2]=this->min(fdbck[2],MAX_JOINT_TORQUE_2);
     }
     if (!setData())
         return false;
@@ -278,10 +279,15 @@ bool GeomagicDriver::setForceFeedback(const Vector &force)
 
 
 /*********************************************************************/
+bool GeomagicDriver::stopFeedback()
+{
+    return true;
+}
+
+
+/*********************************************************************/
 bool GeomagicDriver::setTransformation(const Matrix &T)
 {
-    HLdouble m[16];
-
     if ((T.rows()<this->T.rows()) || (T.cols()<this->T.cols()))
     {
         yError("*** Geomagic Driver: requested to use the unsuitable transformation matrix %s",
@@ -293,8 +299,10 @@ bool GeomagicDriver::setTransformation(const Matrix &T)
     if (verbosity>0)
         yInfo("*** Geomagic Driver: transformation matrix set to %s",
               this->T.toString(5,5).c_str());
+    
+    HLdouble m[16];
+    int n=0;
 
-    int n = 0;
     for (int j = 0; j < this->T.cols(); j++) {
         for (int i = 0; i < this->T.rows(); i++) {
             m[n++] = this->T(i, j);
@@ -360,10 +368,10 @@ bool GeomagicDriver::setData()
 /*********************************************************************/
 HDdouble GeomagicDriver::min(HDdouble value, HDdouble max)
 {
-    if (value > max)
-        value = max;
-    else if (value < -max)
-        value = -max;
+    if (value>max)
+        value=max;
+    else if (value<-max)
+        value=-max;
     return value;
 }
 

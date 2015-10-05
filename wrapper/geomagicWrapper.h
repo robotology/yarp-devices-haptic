@@ -45,8 +45,8 @@ protected:
     yarp::dev::PolyDriver driver;
     geomagic::IGeomagic *device;
 
-    yarp::sig::Vector force;
-    bool applyForce;
+    yarp::sig::Vector fdbck;
+    bool applyFdbck;
 
     bool read(yarp::os::ConnectionReader &connection);
     bool threadInit();

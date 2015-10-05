@@ -39,7 +39,8 @@ if(ENABLE_geomagicmod_geomagicdriver)
     endif()
     
 
-    yarp_add_plugin(geomagicdriver geomagicDriver.h geomagicDriver.cpp)
+    yarp_add_plugin(geomagicdriver geomagicDriver.h geomagicDriver.cpp
+                    ${PROJECT_SOURCE_DIR}/interface/IGeomagic.h)
     target_link_libraries(geomagicdriver ${YARP_LIBRARIES} ${GEOMAGIC_LIBRARIES})
     yarp_install(TARGETS geomagicdriver
                  COMPONENT Runtime

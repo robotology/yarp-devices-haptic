@@ -8,8 +8,11 @@ if(ENABLE_geomagicmod_geomagicwrapper)
     include_directories(${YARP_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${PROJECT_SOURCE_DIR}/interface)
+    include_directories(${PROJECT_SOURCE_DIR}/common)
 
-    yarp_add_plugin(geomagicwrapper geomagicWrapper.h geomagicWrapper.cpp)
+    yarp_add_plugin(geomagicwrapper geomagicWrapper.h geomagicWrapper.cpp
+                    ${PROJECT_SOURCE_DIR}/interface/IGeomagic.h
+                    ${PROJECT_SOURCE_DIR}/common/common.h)
     target_link_libraries(geomagicwrapper ${YARP_LIBRARIES})
     yarp_install(TARGETS geomagicwrapper
                  COMPONENT Runtime

@@ -14,7 +14,6 @@
 #include <yarp/sig/Matrix.h>
 
 namespace geomagic {
-
     /**
      * A generic Geomagic interface
      */
@@ -48,11 +47,52 @@ namespace geomagic {
         virtual bool getButtons(yarp::sig::Vector &buttons)=0;
 
         /**
-         * Set the values for the force feedback.
-         * @param force vector containing the force feedback values.
+        * Query which feedback mode is active.
+        * @param ret true iff Cartesian force feedback is active,
+        *            false iff joint torque feedback is active.
+        * @return true/false on success/failure.
+        */
+        virtual bool isCartesianForceModeEnabled(bool &ret)=0;
+        
+        /**
+        * Enable Cartesian force feedback mode.
+        * @return true/false on success/failure.
+        */
+        virtual bool setCartesianForceMode()=0;
+
+        /**
+        * Enable joint torque feedback mode.
+        * @return true/false on success/failure.
+        */
+        virtual bool setJointTorqueMode()=0;
+
+        /**
+        * Get maximum values for the feedback.
+        * @param max vector containing the 3 maximum bounds
+        *            of the feedback.
+        *            Units are:
+        *            [N] in Cartesian force mode,
+        *            [mN*m] in joint torque mode.
+        * @return true/false on success/failure.
+        */
+        virtual bool getMaxFeedback(yarp::sig::Vector &max)=0;
+
+        /**
+         * Set the values for the force/torque feedback.
+         * @param fdbck vector containing the 3 components of the
+         *              feedback values.
+         *              Units are:
+         *              [N] in Cartesian force mode,
+         *              [mN*m] in joint torque mode.
          * @return true/false on success/failure.
          */
-        virtual bool setForceFeedback(const yarp::sig::Vector &force)=0;
+        virtual bool setFeedback(const yarp::sig::Vector &fdbck)=0;
+
+        /**
+        * Disable force/torque feedback.
+        * @return true/false on success/failure.
+        */
+        virtual bool stopFeedback()=0;
 
         /**
          * Set the transformation matrix to be applied to position and
@@ -70,7 +110,6 @@ namespace geomagic {
          */
         virtual bool getTransformation(yarp::sig::Matrix &T)=0;
     };
-
 }
 
 #endif
