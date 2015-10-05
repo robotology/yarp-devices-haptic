@@ -7,7 +7,7 @@
 
     <device name="geomagic_wrapper" type="geomagicwrapper">
 
-        <param name="name"> test </param>
+        <param name="name"> geomagic </param>
         <param name="period"> 10 </param>
         <param name="verbosity"> 1 </param>
 
