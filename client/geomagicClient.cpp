@@ -143,7 +143,7 @@ bool GeomagicClient::isCartesianForceModeEnabled(bool &ret)
 
     if (rep.get(0).asVocab()==geomagic::ack)
     {
-        ret=(rep.get(1).Int()!=0);
+        ret=(rep.get(1).asInt()!=0);
         return true;
     }
     else
@@ -205,7 +205,7 @@ bool GeomagicClient::getMaxFeedback(Vector &max)
 /*********************************************************************/
 bool GeomagicClient::setFeedback(const Vector &fdbck)
 {
-    feedbackPort.prepare().read(fdbck);
+    feedbackPort.prepare().read(const_cast<Vector&>(fdbck));
     feedbackPort.writeStrict();
     return true;
 }
@@ -252,7 +252,7 @@ bool GeomagicClient::setTransformation(const Matrix &T)
 {
     Bottle cmd,rep;
     cmd.addVocab(geomagic::set_transformation);
-    cmd.addList().read(T);
+    cmd.addList().read(const_cast<Matrix&>(T));
     if (!rpcPort.write(cmd,rep))
     {
         yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");

@@ -4,7 +4,7 @@
 
 yarp_prepare_device(geomagicclient TYPE GeomagicClient INCLUDE geomagicClient.h WRAPPER geomagicclient)
 
-if(ENABLE_geomagicmod_geomagicclietn)
+if(ENABLE_geomagicmod_geomagicclient)
     include_directories(${YARP_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${PROJECT_SOURCE_DIR}/interface)
