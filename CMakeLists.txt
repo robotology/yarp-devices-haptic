@@ -25,7 +25,8 @@ install(TARGETS geomagicmod EXPORT geomagicmod
 		ARCHIVE DESTINATION lib
 		PUBLIC_HEADER DESTINATION include/geomagicmod COMPONENT dev)
 
-yarp_install(FILES conf/${PROJECT_NAME}.xml                                DESTINATION ${GEOMAGIC_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
-yarp_install(FILES interface/IGeomagic.h                                   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
-yarp_install(FILES ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake DESTINATION ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR})
+yarp_install(FILES conf/${PROJECT_NAME}.xml DESTINATION ${GEOMAGIC_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
+yarp_install(FILES interface/IGeomagic.h    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
+yarp_install(FILES ${PROJECT_SOURCE_DIR}/cmake/generated/${PROJECT_NAME}Config.cmake
+             DESTINATION ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR})
 
