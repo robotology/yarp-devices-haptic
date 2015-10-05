@@ -5,9 +5,6 @@
 yarp_prepare_device(geomagicdriver TYPE GeomagicDriver INCLUDE geomagicDriver.h WRAPPER geomagicwrapper)
 
 if(ENABLE_geomagicmod_geomagicdriver)
-    include_directories(${YARP_INCLUDE_DIRS})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-    include_directories(${PROJECT_SOURCE_DIR}/interface)
     if(UNIX)
         set(GEOMAGIC_INCLUDE_DIRS)
         set(GEOMAGIC_LIBRARIES HDU HD)
@@ -38,9 +35,14 @@ if(ENABLE_geomagicmod_geomagicdriver)
         endif()
     endif()
     
+	include_directories(${YARP_INCLUDE_DIRS})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+	include_directories(${GEOMAGIC_INCLUDE_DIRS})
+    include_directories(${PROJECT_SOURCE_DIR}/interface)	
 
     yarp_add_plugin(geomagicdriver geomagicDriver.h geomagicDriver.cpp
                     ${PROJECT_SOURCE_DIR}/interface/IGeomagic.h)
+ 
     target_link_libraries(geomagicdriver ${YARP_LIBRARIES} ${GEOMAGIC_LIBRARIES})
     yarp_install(TARGETS geomagicdriver
                  COMPONENT Runtime
