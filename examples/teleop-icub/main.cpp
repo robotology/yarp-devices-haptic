@@ -86,9 +86,7 @@ public:
         optGeo.put("remote",("/"+geomagic).c_str());
         optGeo.put("local",("/"+name+"/geomagic").c_str());
         if (!drvGeomagic.open(optGeo))
-        {
             return false;
-        }
         drvGeomagic.view(igeo);
 
         if (simulator)
