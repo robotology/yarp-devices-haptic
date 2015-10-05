@@ -24,4 +24,14 @@ install(TARGETS geomagicmod EXPORT geomagicmod
 		PUBLIC_HEADER DESTINATION include/geomagicmod COMPONENT dev)
 
 yarp_install(FILES conf/${PROJECT_NAME}.xml DESTINATION ${GEOMAGIC_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
+yarp_install(FILES interface/IGeomagic.h    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
+
+file(WRITE  ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake "# Copyright: (C) 2015 iCub Facility")
+file(APPEND ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake "# Authors: Ugo Pattacini <ugo.pattacini@iit.it>")
+file(APPEND ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake "# CopyPolicy: Released under the terms of the GNU GPL v2.0.")
+file(APPEND ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake " ")
+file(APPEND ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake "if(NOT geomagic_FOUND)")
+file(APPEND ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake "set(${PROJECT_NAME}_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})")
+file(APPEND ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake "    set(geomagic_FOUND TRUE)")
+file(APPEND ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR}/${PROJECT_NAME}Config.cmake "endif()")
 
