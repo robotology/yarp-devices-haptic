@@ -27,12 +27,12 @@ using namespace geomagic;
 /*********************************************************************/
 void StatePort::onRead(Bottle &state)
 {
-	if (client!=NULL)
-	{
-		LockGuard lg(client->mutex);
-		state.write(client->state);
-		getEnvelope(client->stamp);
-	}
+    if (client!=NULL)
+    {
+        LockGuard lg(client->mutex);
+        state.write(client->state);
+        getEnvelope(client->stamp);
+    }
 }
 
 
@@ -64,7 +64,7 @@ bool GeomagicClient::open(Searchable &config)
     statePort.open((local+"/state:i").c_str());
     feedbackPort.open((local+"/feedback:o").c_str());
     rpcPort.open((local+"/rpc").c_str());
-	statePort.setClient(this);
+    statePort.setClient(this);
 
     bool ok=true;
     ok|=Network::connect((remote+"/state:o").c_str(),statePort.getName().c_str(),"udp");

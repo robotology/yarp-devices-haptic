@@ -35,10 +35,10 @@ public:
         useCallback();
     }
 
-	void setClient(GeomagicClient *client_)
-	{
-		this->client=client_;
-	}
+    void setClient(GeomagicClient *client_)
+    {
+        this->client=client_;
+    }
 };
 
 /**
