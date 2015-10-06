@@ -68,8 +68,8 @@ driver.view(igeomagic);
 The **IGeomagic** YARP interface is documented here: [http://robotology.github.com/geomagic](http://robotology.github.com/geomagic).
 
 ## Authors
-- Ugo Pattacini (@pattacini)
-- Manuelito Scola (@manuelitoscola)
+- [`Ugo Pattacini`](https://github.com/pattacini)
+- [`Manuelito Scola`](https://github.com/manuelitoscola)
 
 ## License
 
