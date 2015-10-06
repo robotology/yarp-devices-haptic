@@ -7,18 +7,22 @@ Geomagic YARP Device Driver
 Login at http://developer.geomagic.com, download the drivers and the SDK
 for your platform and follow the enclosed instructions.
 
-In _Windows_, the environment variable **`OH_SDK_BASE`** should be set pointing to the location where the driver and the SDK are installed.
+In _Windows_, the environment variable **`OH_SDK_BASE`** should be set by the installer
+pointing to the location where the driver and the SDK are installed.
 
-In _Linux_, remember to set **`LC_NUMERIC=en_US.UTF-8`** in the environment, prior to pairing the device. This will make the driver work outside US.
+In _Linux_, remember to set **`LC_NUMERIC=en_US.UTF-8`** in the environment,
+prior to pairing the device. This will make the driver work outside US.
 
 ##### Dependencies for the YARP device driver and the examples
 - [YARP](https://github.com/robotology/yarp)
 - [icub-contrib-common](https://github.com/robotology/icub-contrib-common) (only for the examples)
 
 ## Compiling and Installing the YARP driver
-1. Set up the building project by means of **cmake**. Remember to tick on the three drivers: `geomagicdriver`, `geomagicwrapper`, `geomagicclient`.
+1. Set up the building project by means of **cmake**. Remember to tick on the three drivers: `geomagicdriver`,
+`geomagicwrapper`, `geomagicclient`.
 2. Compile and install the project.
-3. Set up the environment variable **`geomagic_DIR`** pointing where the project gets installed (should be the same path used for `CMAKE_INSTALL_PREFIX`).
+3. Set up the environment variable **`geomagic_DIR`** pointing where the project gets installed
+(should be the same path used for `CMAKE_INSTALL_PREFIX`).
 4. Append to the environment variable **`YARP_DATA_DIRS`** the path `$geomagic_DIR/share/geomagic`.
 
 ## Running YARP driver
@@ -39,7 +43,8 @@ The available options are:
 - `period` _period_: an integer that specifies the period in `ms` (`20 ms` by default).
 - `verbosity` _level_: an integer accounting for the enabled verbosity level (`0` by default).
 
-In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding `geomagic.xml` file that is installed in `$geomagic_DIR/share/geomagic/context/geomagic` and possibly customized using the `yarp-config` tool.
+In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding
+`geomagic.xml` file that is installed in `$geomagic_DIR/share/geomagic/context/geomagic` and possibly customized using the `yarp-config` tool.
 
 ## Connecting to the YARP driver
 A YARP module that wants to connect to the Geomagic Touch YARP driver needs to be designed containing the following instructions:
