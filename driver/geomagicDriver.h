@@ -17,8 +17,6 @@
 
 #include <HD/hd.h>
 #include <HL/hl.h>
-#include <HDU/hduMatrix.h>
-#include <HDU/hduVector.h>
 #include <HDU/hduError.h>
 
 #include "IGeomagic.h"
@@ -57,7 +55,6 @@ protected:
 
     // Geomagic Touch Device HD library variables
     HHD hHD;
-    hduMatrix *hT;
     HDSchedulerHandle hUpdateHandle;
     DeviceData hDeviceData;
     DeviceData innerDeviceData;

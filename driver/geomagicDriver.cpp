@@ -38,7 +38,7 @@ bool GeomagicDriver::open(Searchable &config)
 
     if (!configured)
     {
-        verbosity=config.check("verbosity",Value(0)).asInt(); 
+        verbosity=config.check("verbosity",Value(0)).asInt();
         if (verbosity>0)
             yInfo("*** Geomagic Driver: opened");
         name=config.check("device-id",
@@ -120,9 +120,6 @@ bool GeomagicDriver::open(Searchable &config)
             return false;
         }
 
-        // No transformation.
-        hT = NULL;
-
         configured=true;
         return true;
     }
@@ -145,11 +142,6 @@ bool GeomagicDriver::close()
         hdUnschedule(hUpdateHandle);
         hdDisableDevice(hHD);
 
-        if (hT != NULL) {
-            delete hT;
-            hT = NULL;
-        }
-
         if (verbosity>0)
             yInfo("*** Geomagic Driver: closed");
         return true;
@@ -165,20 +157,18 @@ bool GeomagicDriver::close()
 /*********************************************************************/
 bool GeomagicDriver::getPosition(Vector &pos)
 {
-    hduVector3Dd translatedPoint;
-
     if (!getData())
         return false;
-    pos.resize(3);
-    if (hT != NULL) {
-        hT->multVecMatrix(hDeviceData.m_devicePosition, translatedPoint);
-        hDeviceData.m_devicePosition[0] = translatedPoint[0];
-        hDeviceData.m_devicePosition[1] = translatedPoint[1];
-        hDeviceData.m_devicePosition[2] = translatedPoint[2];
-    }
+
+    pos.resize(4);
     pos[0]=hDeviceData.m_devicePosition[0];
     pos[1]=hDeviceData.m_devicePosition[1];
     pos[2]=hDeviceData.m_devicePosition[2];
+    pos[3]=1.0;
+
+    pos=T*pos;
+    pos.pop_back();
+
     return true;
 }
 
@@ -188,6 +178,7 @@ bool GeomagicDriver::getOrientation(Vector &rpy)
 {
     if (!getData())
         return false;
+
     rpy.resize(3);
     rpy[0]=hDeviceData.m_gimbalAngles[0];
     rpy[1]=hDeviceData.m_gimbalAngles[1];
@@ -202,6 +193,7 @@ bool GeomagicDriver::getButtons(Vector &buttons)
 {
     if (!getData())
         return false;
+
     buttons.resize(2);
     buttons[0]=hDeviceData.m_button1State;
     buttons[1]=hDeviceData.m_button2State;
@@ -299,18 +291,6 @@ bool GeomagicDriver::setTransformation(const Matrix &T)
     if (verbosity>0)
         yInfo("*** Geomagic Driver: transformation matrix set to %s",
               this->T.toString(5,5).c_str());
-    
-    HLdouble m[16];
-    int i=0;
-    for (int r=0; r<this->T.rows(); r++) {
-        for (int c=0; c<this->T.cols(); c++) {
-            m[i++]=this->T(r,c);
-        }
-    }
-    hT = new hduMatrix(m[0],  m[1],  m[2],  m[3],
-                       m[4],  m[5],  m[6],  m[7],
-                       m[8],  m[9],  m[10], m[11],
-                       m[12], m[13], m[14], m[15]);
 
     return true;
 }
