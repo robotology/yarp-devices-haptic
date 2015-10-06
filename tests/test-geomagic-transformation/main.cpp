@@ -79,7 +79,7 @@ public:
             T(0,3)=pos[0];
             T(1,3)=pos[1];
             T(2,3)=pos[2];
-            igeo->setTransformation(T);
+            igeo->setTransformation(SE3inv(T));
         }
 
         yInfo("pos=(%s); rpy=(%s); buttons=(%s)",

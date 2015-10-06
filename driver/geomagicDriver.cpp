@@ -301,11 +301,10 @@ bool GeomagicDriver::setTransformation(const Matrix &T)
               this->T.toString(5,5).c_str());
     
     HLdouble m[16];
-    int n=0;
-
-    for (int j = 0; j < this->T.cols(); j++) {
-        for (int i = 0; i < this->T.rows(); i++) {
-            m[n++] = this->T(i, j);
+    int i=0;
+    for (int r=0; r<this->T.rows(); r++) {
+        for (int c=0; c<this->T.cols(); c++) {
+            m[i++]=this->T(r,c);
         }
     }
     hT = new hduMatrix(m[0],  m[1],  m[2],  m[3],
