@@ -77,6 +77,7 @@ public:
         {
             Matrix T1;
             igeo->getTransformation(T1);
+            T1=SE3inv(T1);
 
             Matrix T2=eye(4,4);
             T2(0,3)=pos[0];
