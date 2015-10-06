@@ -56,6 +56,8 @@ public:
     bool close()
     {
         igeo->stopFeedback();
+        yInfo("stopping feedback control");
+
         driver.close();
         return true;
     }
@@ -77,6 +79,9 @@ public:
         }
 
         igeo->setFeedback(force);
+        yInfo("applying (%s) [N] force feedback",
+              force.toString(3,3).c_str());
+
         return true; 
     }
 };

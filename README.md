@@ -18,7 +18,7 @@ In _Linux_, remember to set **`LC_NUMERIC=en_US.UTF-8`** in the environment, pri
 ## Compiling and Installing the YARP driver
 1. Set up the building project by means of **cmake**. Remember to tick on the three drivers: `geomagicdriver`, `geomagicwrapper`, `geomagicclient`.
 2. Compile and install the project.
-3. Set up the environment variable **`geomagic_DIR`** pointing where the project gets installed (should be the same content used for `CMAKE_INSTALL_PREFIX`).
+3. Set up the environment variable **`geomagic_DIR`** pointing where the project gets installed (should be the same path used for `CMAKE_INSTALL_PREFIX`).
 4. Append to the environment variable **`YARP_DATA_DIRS`** the path `$geomagic_DIR/share/geomagic`.
 
 ## Running YARP driver
