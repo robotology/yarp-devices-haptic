@@ -17,6 +17,7 @@
 
 #include <HD/hd.h>
 #include <HL/hl.h>
+#include <HDU/hduVector.h>
 #include <HDU/hduError.h>
 
 #include "IGeomagic.h"
