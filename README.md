@@ -67,6 +67,10 @@ driver.view(igeomagic);
 
 The **IGeomagic** YARP interface is documented here: [http://robotology.github.com/geomagic](http://robotology.github.com/geomagic).
 
+## Authors
+- Ugo Pattacini (@pattacini)
+- Manuelito Scola (@manuelitoscola)
+
 ## License
 
 Material included here is Copyright of _iCub Facility - Istituto Italiano di
