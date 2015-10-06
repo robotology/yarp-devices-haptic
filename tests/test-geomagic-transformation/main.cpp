@@ -29,8 +29,6 @@ protected:
     PolyDriver driver;
     IGeomagic *igeo;
     
-    double t0;
-    
 public:
     /**********************************************************/
     bool configure(ResourceFinder &rf)
@@ -51,8 +49,6 @@ public:
             return false;
 
         driver.view(igeo);
-        t0=Time::now();
-
         return true;
     }
 
@@ -77,22 +73,20 @@ public:
         igeo->getOrientation(rpy);
         igeo->getButtons(buttons);
 
-        double t=Time::now();
-        if (t-t0>1.0)
+        if (buttons[0]!=0.0)
         {
-            if (buttons[0]!=0.0)
-            {
-                Matrix T=eye(4,4);
-                T(0,3)=pos[0];
-                T(1,3)=pos[1];
-                T(2,3)=pos[2];
-                igeo->setTransformation(SE3inv(T));
-            }
-            else if (buttons[1]!=0.0)
-                igeo->setTransformation(eye(4,4));
+            Matrix T1;
+            igeo->getTransformation(T1);
 
-            t0=t;
+            Matrix T2=eye(4,4);
+            T2(0,3)=pos[0];
+            T2(1,3)=pos[1];
+            T2(2,3)=pos[2];
+
+            igeo->setTransformation(SE3inv(T1*T2));
         }
+        else if (buttons[1]!=0.0)
+            igeo->setTransformation(eye(4,4));
 
         yInfo("pos=(%s); rpy=(%s); buttons=(%s)",
               pos.toString(3,3).c_str(),
