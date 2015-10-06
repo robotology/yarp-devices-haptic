@@ -29,6 +29,7 @@ Therefore, launch: `yarpdev --list`
 and see if `geomagicdriver`, `geomagicwrapper`, `geomagicclient` are listed down.
 
 You can then run the driver in two ways:
+
 1. `yarpdev --device geomagicdriver [option-list]`
 2. `robotInterface --context geomagic --config geomagic.xml`
 
