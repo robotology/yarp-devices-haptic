@@ -18,4 +18,12 @@ Examples of Geomagic YARP Clients
 - `torso` _sw_: a string on/off to enable/disable the control of the torso during the teleoperation (`on` by default).
 - `Tp2p` _time_: a number (double) accounting for point-to-point trajectory time expressed in seconds (`1.0 s` by default). Decrease it to go faster.
 
-## How to Teleoperate the robot
+## How to Teleoperate the icub/icubSim
+The first button is the greyest.
+
+- By pressing the first button once, you will switch the control mode: from "`xyz`" (position only) to "`full`" (position+orientation).
+- By pressing the second button once, you will select whether to open or to close the hand.
+
+- By keeping the first button pressed, you will move/rotate the robot hand with respect to the present pose.
+- By keeping the second button pressed, you will open/close the robot hand.
+- As soon as you release the button, the ongoing teleoperation gets stopped.
