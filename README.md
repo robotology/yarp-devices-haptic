@@ -34,12 +34,12 @@ You can then run the driver in two ways:
 2. `robotInterface --context geomagic --config geomagic.xml`
 
 The available options are:
-- `device-id` _id_: a string with the name of the Geomagic Touch device that has been paired.
-- `name` _port-stem-name_: a string specifying the ports stem-name.
+- `device-id` _id_: a string with the name of the Geomagic Touch device that has been paired (`Default Device` by default).
+- `name` _port-stem-name_: a string specifying the ports stem-name (`geomagic` by default).
 - `period` _period_: an integer that specifies the period in `ms` (`20 ms` by default).
-- `verbosity` _level_: an integer accounting for the enabled verbosity level.
+- `verbosity` _level_: an integer accounting for the enabled verbosity level (`0` by default).
 
-In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding `geomagic.xml` file.
+In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding `geomagic.xml` file that is installed in `$geomagic_DIR/share/geomagic/context/geomagic` and possibly customized using the `yarp-config` tool.
 
 ## Interface Documentation
 
