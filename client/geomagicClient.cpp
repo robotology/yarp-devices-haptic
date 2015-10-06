@@ -67,9 +67,9 @@ bool GeomagicClient::open(Searchable &config)
     statePort.setClient(this);
 
     bool ok=true;
-    ok|=Network::connect((remote+"/state:o").c_str(),statePort.getName().c_str(),"udp");
-    ok|=Network::connect(feedbackPort.getName().c_str(),(remote+"/feedback:i").c_str(),"tcp");
-    ok|=Network::connect(rpcPort.getName().c_str(),(remote+"/rpc").c_str(),"tcp");
+    ok&=Network::connect((remote+"/state:o").c_str(),statePort.getName().c_str(),"udp");
+    ok&=Network::connect(feedbackPort.getName().c_str(),(remote+"/feedback:i").c_str(),"tcp");
+    ok&=Network::connect(rpcPort.getName().c_str(),(remote+"/rpc").c_str(),"tcp");
 
     if (!ok)
     {
