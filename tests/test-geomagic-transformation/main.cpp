@@ -73,7 +73,7 @@ public:
         igeo->getOrientation(rpy);
         igeo->getButtons(buttons);
 
-        if ((buttons[0]!=0.0) || (buttons[1]!=0.0))
+        if (buttons[0]!=0.0)
         {
             Matrix T=eye(4,4);
             T(0,3)=pos[0];
@@ -81,6 +81,8 @@ public:
             T(2,3)=pos[2];
             igeo->setTransformation(SE3inv(T));
         }
+        else if (buttons[1]!=0.0)
+            igeo->setTransformation(eye(4,4));
 
         yInfo("pos=(%s); rpy=(%s); buttons=(%s)",
               pos.toString(3,3).c_str(),
