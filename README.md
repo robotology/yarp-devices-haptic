@@ -13,7 +13,7 @@ In _Linux_, remember to set **`LC_NUMERIC=en_US.UTF-8`** in the environment, pri
 
 ##### Dependencies for the YARP device driver and the examples
 - [YARP](https://github.com/robotology/yarp)
-- [icub-contrib-common](https://github.com/robotology/icub-contrib-common)
+- [icub-contrib-common](https://github.com/robotology/icub-contrib-common) (only for the examples)
 
 ## Compiling and Installing the YARP driver
 1. Set up the building project by means of **cmake**.
@@ -41,9 +41,31 @@ The available options are:
 
 In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding `geomagic.xml` file that is installed in `$geomagic_DIR/share/geomagic/context/geomagic` and possibly customized using the `yarp-config` tool.
 
-## Interface Documentation
+## Connecting to the YARP driver
+A YARP module that wants to connect to the Geomagic Touch YARP driver needs to be designed containing the following instructions:
 
-Online documentation is available here: [http://robotology.github.com/geomagic](http://robotology.github.com/geomagic).
+CMAKE directives:
+```cmake
+find_package(geomagic REQUIRED)
+include_directories(${geomagic_INCLUDE_DIRS})
+```
+
+C++ code:
+```cpp
+#include <geomagic/IGeomagic.h>
+
+Property option("(device geomagicclient)");
+option.put("remote","/geomagic");   // or whatever wrapper stem-name
+option.put("local","/local-port");  // any local ports stem-name
+
+PolyDriver driver;
+driver.open(option);
+
+geomagic::IGeomagic *igeomagic;
+driver.view(igeomagic);
+```
+
+The **IGeomagic** YARP interface is documented here: [http://robotology.github.com/geomagic](http://robotology.github.com/geomagic).
 
 ## License
 
