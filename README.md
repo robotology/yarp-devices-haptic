@@ -33,7 +33,7 @@ You can then run the driver in two ways:
 1. `yarpdev --device geomagicdriver [option-list]`
 2. `robotInterface --context geomagic --config geomagic.xml`
 
-The available options of are:
+The available options are:
 - `device-id` _id_: a string with the name of the Geomagic Touch device that has been paired.
 - `name` _port-stem-name_: a string specifying the ports stem-name.
 - `period` _period_: an integer that specifies the period in `ms` (`20 ms` by default).
