@@ -193,17 +193,17 @@ bool GeomagicClient::getMaxFeedback(Vector &max)
 
     if (rep.get(0).asVocab()==geomagic::ack)
     {
-		if (Bottle *payload=rep.get(1).asList())
-		{
-			max.resize(payload->size());
-			for (size_t i=0; i<max.length(); i++)
-				max[i]=payload->get(i).asDouble();
-			
-			return true;
-		}
+        if (Bottle *payload=rep.get(1).asList())
+        {
+            max.resize(payload->size());
+            for (size_t i=0; i<max.length(); i++)
+                max[i]=payload->get(i).asDouble();
+            
+            return true;
+        }
     }
     
-	return false;
+    return false;
 }
 
 
@@ -244,23 +244,23 @@ bool GeomagicClient::getTransformation(Matrix &T)
 
     if (rep.get(0).asVocab()==geomagic::ack)
     {
-		if (Bottle *payload=rep.get(1).asList())
-		{
-			T.resize(payload->get(0).asInt(),
-				     payload->get(1).asInt());
-			
-			if (Bottle *vals=payload->get(2).asList())
-			{
-				for (int r=0; r<T.rows(); r++)
-					for (int c=0; c<T.cols(); c++)
-						T(r,c)=vals->get(T.rows()*r+c).asDouble();
-			
-				return true;
-			}
-		}
+        if (Bottle *payload=rep.get(1).asList())
+        {
+            T.resize(payload->get(0).asInt(),
+                     payload->get(1).asInt());
+            
+            if (Bottle *vals=payload->get(2).asList())
+            {
+                for (int r=0; r<T.rows(); r++)
+                    for (int c=0; c<T.cols(); c++)
+                        T(r,c)=vals->get(T.rows()*r+c).asDouble();
+            
+                return true;
+            }
+        }
     }
     
-	return false;
+    return false;
 }
 
 

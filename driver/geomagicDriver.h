@@ -75,7 +75,7 @@ protected:
 
     bool getData();
     bool setData();
-    HDdouble min(HDdouble value,HDdouble max);
+    HDdouble sat(HDdouble value,HDdouble max);
 
 public:
     GeomagicDriver();

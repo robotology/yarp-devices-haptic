@@ -263,14 +263,14 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
         return false;
 
     if (hDeviceData.m_isForce) {
-        hDeviceData.m_forceValues[0]=this->min(fdbck[0],maxForceMagnitude);
-        hDeviceData.m_forceValues[1]=this->min(fdbck[1],maxForceMagnitude);
-        hDeviceData.m_forceValues[2]=this->min(fdbck[2],maxForceMagnitude);
+        hDeviceData.m_forceValues[0]=this->sat(fdbck[0],maxForceMagnitude);
+        hDeviceData.m_forceValues[1]=this->sat(fdbck[1],maxForceMagnitude);
+        hDeviceData.m_forceValues[2]=this->sat(fdbck[2],maxForceMagnitude);
     }
     else {
-        hDeviceData.m_forceValues[0]=this->min(fdbck[0],MAX_JOINT_TORQUE_0);
-        hDeviceData.m_forceValues[1]=this->min(fdbck[1],MAX_JOINT_TORQUE_1);
-        hDeviceData.m_forceValues[2]=this->min(fdbck[2],MAX_JOINT_TORQUE_2);
+        hDeviceData.m_forceValues[0]=this->sat(fdbck[0],MAX_JOINT_TORQUE_0);
+        hDeviceData.m_forceValues[1]=this->sat(fdbck[1],MAX_JOINT_TORQUE_1);
+        hDeviceData.m_forceValues[2]=this->sat(fdbck[2],MAX_JOINT_TORQUE_2);
     }
     if (!setData())
         return false;
@@ -366,7 +366,7 @@ bool GeomagicDriver::setData()
 
 
 /*********************************************************************/
-HDdouble GeomagicDriver::min(HDdouble value, HDdouble max)
+HDdouble GeomagicDriver::sat(HDdouble value, HDdouble max)
 {
     if (value>max)
         value=max;

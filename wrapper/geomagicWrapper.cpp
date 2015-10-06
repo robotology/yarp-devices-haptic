@@ -167,23 +167,23 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
         {
             if (cmd.size()>=2)
             {
-				if (Bottle *payload=cmd.get(1).asList())
-				{
-					Matrix T(payload->get(0).asInt(),
-							 payload->get(1).asInt());
-			
-					if (Bottle *vals=payload->get(2).asList())
-					{
-						for (int r=0; r<T.rows(); r++)
-							for (int c=0; c<T.cols(); c++)
-								T(r,c)=vals->get(T.rows()*r+c).asDouble();
-			
-						if (device->setTransformation(T))
-							rep.addVocab(geomagic::ack);
-						else
-							rep.addVocab(geomagic::nack);
-					}
-				}
+                if (Bottle *payload=cmd.get(1).asList())
+                {
+                    Matrix T(payload->get(0).asInt(),
+                             payload->get(1).asInt());
+            
+                    if (Bottle *vals=payload->get(2).asList())
+                    {
+                        for (int r=0; r<T.rows(); r++)
+                            for (int c=0; c<T.cols(); c++)
+                                T(r,c)=vals->get(T.rows()*r+c).asDouble();
+            
+                        if (device->setTransformation(T))
+                            rep.addVocab(geomagic::ack);
+                        else
+                            rep.addVocab(geomagic::nack);
+                    }
+                }
             }
         }
         else if (tag==geomagic::get_transformation)
@@ -227,9 +227,9 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
         {
             Vector max;
             if (device->getMaxFeedback(max))
-            {				
+            {               
                 rep.addVocab(geomagic::ack);
-                rep.addList().read(max);				
+                rep.addList().read(max);                
             }
             else
                 rep.addVocab(geomagic::nack);
