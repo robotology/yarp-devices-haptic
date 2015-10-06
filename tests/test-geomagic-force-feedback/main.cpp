@@ -36,7 +36,18 @@ public:
     /**********************************************************/
     bool configure(ResourceFinder &rf)
     {
-        Property option("(device geomagicdriver)");        
+        string mode=rf.check("mode",Value("physical")).asString().c_str();
+
+        Property option;
+        if (mode=="physical")
+            option.put("device","geomagicdriver");
+        else
+        {
+            option.put("device","geomagicclient"); 
+            option.put("remote","/geomagic");
+            option.put("local","/client");
+        }
+
         if (!driver.open(option))
             return false;
 
@@ -88,10 +99,19 @@ public:
 
 
 /**********************************************************/
-int main()
+int main(int argc,char *argv[])
 {
-    TestModule test;
+    Network yarp;
+    if (!yarp.checkNetwork())
+    {
+        yError("YARP server not found!");
+        return 1;
+    }
+    
     ResourceFinder rf;
+    rf.configure(argc,argv);
+
+    TestModule test;
     return test.runModule(rf);
 }
 

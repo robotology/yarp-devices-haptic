@@ -3,7 +3,7 @@
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 cmake_minimum_required(VERSION 2.8.9)
-project(test-geomagic-client)
+project(test-geomagic-retrieve-data)
 
 find_package(YARP        REQUIRED)
 find_package(ICUBcontrib REQUIRED)
