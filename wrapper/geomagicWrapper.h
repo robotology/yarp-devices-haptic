@@ -18,6 +18,7 @@
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Stamp.h>
+#include <yarp/os/Mutex.h>
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/Wrapper.h>
 #include <yarp/sig/Vector.h>
@@ -40,6 +41,7 @@ protected:
     yarp::os::BufferedPort<yarp::os::Bottle> feedbackPort;
     yarp::os::RpcServer                      rpcPort;
     
+    yarp::os::Mutex mutex;
     yarp::os::Stamp stamp;
 
     yarp::dev::PolyDriver driver;

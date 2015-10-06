@@ -8,6 +8,7 @@
  */
 
 #include <yarp/os/Log.h>
+#include <yarp/os/LockGuard.h>
 #include <yarp/sig/Matrix.h>
 #include <yarp/math/Math.h>
 
@@ -163,6 +164,8 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
     Bottle rep;
     if (device!=NULL)
     {
+        LockGuard lg(mutex);
+
         if (tag==geomagic::set_transformation)
         {
             if (cmd.size()>=2)
@@ -277,6 +280,8 @@ void GeomagicWrapper::run()
 {
     if (device!=NULL)
     {
+        LockGuard lg(mutex);
+
         Vector pos,rpy,buttons;
         device->getPosition(pos);
         device->getOrientation(rpy);
