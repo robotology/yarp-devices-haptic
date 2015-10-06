@@ -202,6 +202,8 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
         }
         else if (tag==geomagic::stop_feedback)
         {
+            fdbck=0.0;
+            device->setFeedback(fdbck);
             applyFdbck=false;
             rep.addVocab(geomagic::ack);
         }
