@@ -25,4 +25,4 @@ The first button is the greyest.
 - By pressing the second button once, you will select whether to open or to close the hand.
 - By keeping the first button pressed, you will move/rotate the robot hand with respect to the present pose.
 - By keeping the second button pressed, you will open/close the robot hand.
-- As soon as you release the button, the ongoing teleoperation gets stopped.
+- As soon as you release any button, the ongoing teleoperation gets stopped.
