@@ -95,8 +95,7 @@ namespace geomagic {
         virtual bool stopFeedback()=0;
 
         /**
-         * Set the transformation matrix to be applied to position and
-         * orientation data.
+         * Set the transformation matrix to be applied to position data.
          * @param T the transformation matrix.
          * @return true/false on success/failure.
          */
@@ -104,7 +103,7 @@ namespace geomagic {
 
         /**
          * Get the current transformation matrix used to modify the
-         * position and orientation readings.
+         * position readings.
          * @param T the returned transformation matrix.
          * @return true/false on success/failure.
          */
