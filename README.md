@@ -15,7 +15,7 @@ prior to pairing the device. This will make the driver work outside US.
 
 ##### Dependencies for the YARP device driver and the examples
 - [YARP](https://github.com/robotology/yarp)
-- [icub-contrib-common](https://github.com/robotology/icub-contrib-common) (only for the examples)
+- [icub-contrib-common](https://github.com/robotology/icub-contrib-common) (only for examples and tests)
 
 ## Compiling and Installing the YARP driver
 1. Set up the building project by means of **cmake**. Remember to tick on the three drivers: `geomagicdriver`,
