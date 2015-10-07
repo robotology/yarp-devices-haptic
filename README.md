@@ -25,7 +25,7 @@ prior to pairing the device. This will make the driver work outside US.
 (should be the same path used for `CMAKE_INSTALL_PREFIX`).
 4. Append to the environment variable **`YARP_DATA_DIRS`** the path `$geomagic_DIR/share/geomagic`.
 
-## Running YARP driver
+## Running the YARP driver
 First, check whether the YARP drivers got installed correctly.
 
 Therefore, launch: `yarpdev --list`
