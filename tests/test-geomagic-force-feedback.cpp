@@ -86,7 +86,7 @@ public:
         if (t-t0>2.0)
         {
             force=-1.0*force;
-            t0=Time::now();
+            t0=t;
         }
 
         igeo->setFeedback(force);
