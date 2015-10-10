@@ -62,7 +62,7 @@ protected:
     bool onlyXYZ;
     map<int,string> stateStr;
 
-    Matrix T,Tsim;
+    Matrix Tsim;
     Vector pos0,rpy0;
     Vector x0,o0;
 
@@ -190,12 +190,12 @@ public:
         stateStr[triggered]="triggered";
         stateStr[running]="running";
 
-        T=zeros(4,4);
+        Matrix T=zeros(4,4);
         T(0,1)=1.0;
         T(1,2)=1.0;
         T(2,0)=1.0;
         T(3,3)=1.0;
-        T=SE3inv(T);
+        igeo->setTransformation(SE3inv(T));
         
         Tsim=zeros(4,4);
         Tsim(0,1)=-1.0;
@@ -268,6 +268,7 @@ public:
             drvGaze.close();
         }
 
+        igeo->setTransformation(eye(4,4));
         drvGeomagic.close();
 
         return true;
@@ -339,7 +340,7 @@ public:
                 H0(1,3)=x0[1];
                 H0(2,3)=x0[2];
 
-                xd=H0*(T*xd);
+                xd=H0*xd;
 
                 Matrix Rd;
                 if (onlyXYZ)
