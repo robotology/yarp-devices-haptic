@@ -161,9 +161,9 @@ bool GeomagicDriver::getPosition(Vector &pos)
         return false;
 
     pos.resize(4);
-    pos[0]=hDeviceData.m_devicePosition[0];
-    pos[1]=hDeviceData.m_devicePosition[1];
-    pos[2]=hDeviceData.m_devicePosition[2];
+    pos[0]=0.001*hDeviceData.m_devicePosition[0];
+    pos[1]=0.001*hDeviceData.m_devicePosition[1];
+    pos[2]=0.001*hDeviceData.m_devicePosition[2];
     pos[3]=1.0;
 
     pos=T*pos;

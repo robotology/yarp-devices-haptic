@@ -330,9 +330,9 @@ public:
             else
             {
                 Vector xd(4,0.0);
-                xd[0]=0.001*(pos[0]-pos0[0]);
-                xd[1]=0.001*(pos[1]-pos0[1]);
-                xd[2]=0.001*(pos[2]-pos0[2]);
+                xd[0]=pos[0]-pos0[0];
+                xd[1]=pos[1]-pos0[1];
+                xd[2]=pos[2]-pos0[2];
                 xd[3]=1.0;
 
                 Matrix H0=eye(4,4);
