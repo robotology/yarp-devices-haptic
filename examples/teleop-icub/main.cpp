@@ -161,6 +161,8 @@ public:
         Vector dof(10,1.0);
         if (!torso)
             dof[0]=dof[1]=dof[2]=0.0;
+        else
+            dof[1]=0.0;
         iarm->setDOF(dof,dof);
         iarm->setTrajTime(Tp2p);
         
