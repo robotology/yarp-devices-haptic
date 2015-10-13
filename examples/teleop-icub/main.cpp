@@ -164,8 +164,8 @@ public:
             vels.push_back(100.0);
             poss.push_back(0.0);
         }
-        poss[0]=40.0;
-        poss[1]=90.0;
+        poss[0]=20.0;
+        poss[1]=70.0;
         
         imod->setControlModes(joints.size(),joints.getFirst(),modes.getFirst());
         ipos->setRefAccelerations(joints.size(),joints.getFirst(),accs.data());
@@ -181,6 +181,7 @@ public:
             modes.push_back(VOCAB_CM_VELOCITY);
             vels.push_back(40.0);
         }
+        vels[vels.length()-1]=100.0;
         
         s0=s1=idle;
         c0=c1=0;
