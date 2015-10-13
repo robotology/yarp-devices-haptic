@@ -235,9 +235,7 @@ bool GeomagicDriver::getMaxFeedback(Vector &max)
 {
     max.resize(3);
     if (hDeviceData.m_isForce) {
-        max[0]= maxForceMagnitude;
-        max[1]=maxForceMagnitude;
-        max[2]=maxForceMagnitude;
+        max=maxForceMagnitude;
     }
     else {
         max[0]=MAX_JOINT_TORQUE_0;
@@ -255,9 +253,13 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
         return false;
 
     if (hDeviceData.m_isForce) {
-        hDeviceData.m_forceValues[0]=this->sat(fdbck[0],maxForceMagnitude);
-        hDeviceData.m_forceValues[1]=this->sat(fdbck[1],maxForceMagnitude);
-        hDeviceData.m_forceValues[2]=this->sat(fdbck[2],maxForceMagnitude);
+        Vector fdbck_=fdbck;
+        fdbck_.push_back(1.0);
+        fdbck_=SE3inv(T)*fdbck_;
+
+        hDeviceData.m_forceValues[0]=this->sat(fdbck_[0],maxForceMagnitude);
+        hDeviceData.m_forceValues[1]=this->sat(fdbck_[1],maxForceMagnitude);
+        hDeviceData.m_forceValues[2]=this->sat(fdbck_[2],maxForceMagnitude);
     }
     else {
         hDeviceData.m_forceValues[0]=this->sat(fdbck[0],MAX_JOINT_TORQUE_0);
@@ -273,6 +275,13 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
 /*********************************************************************/
 bool GeomagicDriver::stopFeedback()
 {
+    hDeviceData.m_forceValues[0]=0.0;
+    hDeviceData.m_forceValues[1]=0.0;
+    hDeviceData.m_forceValues[2]=0.0;
+    
+    if (!setData())
+        return false;
+    
     return true;
 }
 

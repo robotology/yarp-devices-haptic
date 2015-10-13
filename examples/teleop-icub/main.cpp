@@ -75,7 +75,6 @@ protected:
     Vector feedback;
     double minForce;
     double maxForce;
-    double feedbackTmo;
 
 public:
     /**********************************************************/
@@ -88,8 +87,8 @@ public:
         part=rf.check("part",Value("right_arm")).asString().c_str();
         simulator=rf.check("simulator",Value("off")).asString()=="on";
         gaze=rf.check("gaze",Value("off")).asString()=="on";
-        minForce=fabs(rf.check("min-force-feedback",Value(3.0)).asDouble());
-        maxForce=fabs(rf.check("max-force-feedback",Value(15.0)).asDouble());
+        minForce=fabs(rf.check("min-force-feedback",Value(5.0)).asDouble());
+        maxForce=fabs(rf.check("max-force-feedback",Value(20.0)).asDouble());
         bool torso=rf.check("torso",Value("on")).asString()=="on";
 
         Property optGeo("(device geomagicclient)");
@@ -250,7 +249,6 @@ public:
 
         forceFbPort.open(("/"+name+"/force-feedback:i").c_str());
         feedback.resize(3,0.0);
-        feedbackTmo=Time::now();
 
         return true;
     }
@@ -466,7 +464,7 @@ public:
         reachingHandler(b0,pos,rpy);
         handHandler(b1);
         
-        if ((!b0 && !b1) || (Time::now()-feedbackTmo>0.5))
+        if (!b0 && !b1)
         {
             if (norm(feedback)>0.0)
             {
@@ -491,7 +489,7 @@ public:
             }
 
             igeo->setFeedback(feedback);
-            feedbackTmo=Time::now();
+            yInfo("feedback = (%s)",feedback.toString(3,3).c_str());
         }
 
         yInfo("[reaching=%s; pose=%s;] [hand=%s; movement=%s;]",

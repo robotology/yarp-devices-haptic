@@ -17,8 +17,8 @@ Examples of Geomagic YARP Clients
 - `gaze` _sw_: a string on/off to control the gaze as well (`off` by default).
 - `torso` _sw_: a string on/off to enable/disable the control of the torso during the teleoperation (`on` by default).
 - `Tp2p` _time_: a number (double) accounting for point-to-point trajectory time expressed in seconds (`1.0 s` by default). Decrease it to go faster.
-- `min-force-feedback` _val_: a number (double) accounting for the minimum force that can be transmitted as a feedback to the device (`3.0 N` by default).
-- `max-force-feedback` _val_: a number (double) accounting for the maximum force that can be transmitted as a feedback to the device (`15.0 N` by default).
+- `min-force-feedback` _val_: a number (double) accounting for the minimum force that can be transmitted as a feedback to the device (`5.0 N` by default).
+- `max-force-feedback` _val_: a number (double) accounting for the maximum force that can be transmitted as a feedback to the device (`20.0 N` by default).
 
 The port _/teleop-icub/force-feedback:i_ does accept three numbers to implement the 3D force feedback on the tip of the device.
 
