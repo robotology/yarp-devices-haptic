@@ -95,16 +95,17 @@ namespace geomagic {
         virtual bool stopFeedback()=0;
 
         /**
-         * Set the transformation matrix to be applied to position data.
-         * @param T the transformation matrix.
+         * Set the transformation matrix to be applied to position and 
+         * force feedback data. 
+         * @param T the 4-by-4 transformation matrix.
          * @return true/false on success/failure.
          */
         virtual bool setTransformation(const yarp::sig::Matrix &T)=0;
 
         /**
          * Get the current transformation matrix used to modify the
-         * position readings.
-         * @param T the returned transformation matrix.
+         * position readings and force feedback.
+         * @param T the returned 4-by-4 transformation matrix.
          * @return true/false on success/failure.
          */
         virtual bool getTransformation(yarp::sig::Matrix &T)=0;
@@ -112,3 +113,4 @@ namespace geomagic {
 }
 
 #endif
+
