@@ -20,7 +20,7 @@ Examples of Geomagic YARP Clients
 - `min-force-feedback` _val_: a number (double) accounting for the minimum force that can be transmitted as a feedback to the device (`3.0 N` by default).
 - `max-force-feedback` _val_: a number (double) accounting for the maximum force that can be transmitted as a feedback to the device (`15.0 N` by default).
 
-The port _/<name>/force-feedback:i_ does accept three numbers to implement the 3D force feedback on the tip of the device.
+The port _/teleop-icub/force-feedback:i_ does accept three numbers to implement the 3D force feedback on the tip of the device.
 
 ## How to Teleoperate the icub/icubSim
 The first button is the greyest.
