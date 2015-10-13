@@ -9,6 +9,7 @@
 
 #include <string>
 #include <cmath>
+#include <algorithm>
 #include <map>
 
 #include <yarp/os/all.h>
@@ -44,6 +45,7 @@ protected:
     IGazeControl      *igaze;
     IGeomagic         *igeo;
     
+    BufferedPort<Bottle> forceFbPort;
     RpcClient simPort;
 
     string part;
@@ -69,6 +71,12 @@ protected:
     VectorOf<int> joints,modes;
     Vector vels;
 
+    Vector maxFeedback;
+    Vector feedback;
+    double minForce;
+    double maxForce;
+    double feedbackTmo;
+
 public:
     /**********************************************************/
     bool configure(ResourceFinder &rf)
@@ -80,6 +88,8 @@ public:
         part=rf.check("part",Value("right_arm")).asString().c_str();
         simulator=rf.check("simulator",Value("off")).asString()=="on";
         gaze=rf.check("gaze",Value("off")).asString()=="on";
+        minForce=fabs(rf.check("min-force-feedback",Value(3.0)).asDouble());
+        maxForce=fabs(rf.check("max-force-feedback",Value(15.0)).asDouble());
         bool torso=rf.check("torso",Value("on")).asString()=="on";
 
         Property optGeo("(device geomagicclient)");
@@ -197,6 +207,8 @@ public:
         T(2,0)=1.0;
         T(3,3)=1.0;
         igeo->setTransformation(SE3inv(T));
+        igeo->setCartesianForceMode();
+        igeo->getMaxFeedback(maxFeedback);
         
         Tsim=zeros(4,4);
         Tsim(0,1)=-1.0;
@@ -236,6 +248,10 @@ public:
             simPort.write(cmd,reply);
         }
 
+        forceFbPort.open(("/"+name+"/force-feedback:i").c_str());
+        feedback.resize(3,0.0);
+        feedbackTmo=Time::now();
+
         return true;
     }
 
@@ -269,8 +285,10 @@ public:
             drvGaze.close();
         }
 
+        igeo->stopFeedback();
         igeo->setTransformation(eye(4,4));
         drvGeomagic.close();
+        forceFbPort.close();
 
         return true;
     }
@@ -440,13 +458,41 @@ public:
         Vector buttons,pos,rpy;
         igeo->getButtons(buttons);
         igeo->getPosition(pos);
-        igeo->getOrientation(rpy);        
+        igeo->getOrientation(rpy);
 
         bool b0=(buttons[0]!=0.0);
         bool b1=(buttons[1]!=0.0);
 
         reachingHandler(b0,pos,rpy);
         handHandler(b1);
+        
+        if ((!b0 && !b1) || (Time::now()-feedbackTmo>0.5))
+        {
+            if (norm(feedback)>0.0)
+            {
+                igeo->stopFeedback();
+                feedback=0.0;
+            }
+        }
+        else if (Bottle *bForce=forceFbPort.read(false))
+        {
+            size_t sz=std::min(feedback.lenght(),(size_t)bForce.size());
+            for (size_t i=0; i<sz; i++)
+            {
+                feedback[i]=bForce->get(i).asDouble();
+                if ((feedback[i]>=-minForce) && (feedback[i]<=minForce))
+                    feedback[i]=0.0;
+                else if (feedback[i]<=-maxForce)
+                    feedback[i]=-maxForce;
+                else if (feedback[i]>=maxForce)
+                    feedback[i]=maxForce;
+
+                feedback[i]*=maxFeedback[i]/maxForce;
+            }
+
+            igeo->setFeedback(feedback);
+            feedbackTmo=Time::now();
+        }
 
         yInfo("[reaching=%s; pose=%s;] [hand=%s; movement=%s;]",
               stateStr[s0].c_str(),onlyXYZ?"xyz":"full",
