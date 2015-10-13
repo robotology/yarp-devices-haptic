@@ -476,7 +476,7 @@ public:
         }
         else if (Bottle *bForce=forceFbPort.read(false))
         {
-            size_t sz=std::min(feedback.lenght(),(size_t)bForce.size());
+            size_t sz=std::min(feedback.length(),(size_t)bForce->size());
             for (size_t i=0; i<sz; i++)
             {
                 feedback[i]=bForce->get(i).asDouble();
