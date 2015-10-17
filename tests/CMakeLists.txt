@@ -22,7 +22,7 @@ add_executable(test-geomagic-retrieve-data   test-geomagic-retrieve-data.cpp)
 add_executable(test-geomagic-transformation  test-geomagic-transformation.cpp)
 
 target_link_libraries(test-geomagic-force-feedback ${YARP_LIBRARIES})
-target_link_libraries(test-geomagic-retrieve-data ${YARP_LIBRARIES})
+target_link_libraries(test-geomagic-retrieve-data  ${YARP_LIBRARIES})
 target_link_libraries(test-geomagic-transformation ${YARP_LIBRARIES})
 
 install(TARGETS     test-geomagic-force-feedback
