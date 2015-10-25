@@ -22,6 +22,8 @@
 
 #include "IHapticDevice.h"
 
+class HapticDeviceClient;
+
 class StatePort : public yarp::os::BufferedPort<yarp::os::Bottle>
 {
     HapticDeviceClient *client;
@@ -38,6 +40,7 @@ public:
         this->client=client_;
     }
 };
+
 
 /**
  * Haptic Device client.

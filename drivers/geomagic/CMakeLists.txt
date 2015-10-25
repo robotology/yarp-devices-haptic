@@ -4,7 +4,7 @@
 
 yarp_prepare_device(geomagicdriver TYPE GeomagicDriver INCLUDE geomagicDriver.h WRAPPER hapticdevicewrapper)
 
-if(ENABLE_geomagicmod_geomagicdriver)
+if(ENABLE_hapticdevicemod_geomagicdriver)
     if(UNIX)
         set(GEOMAGIC_INCLUDE_DIRS)
         find_library(GEOMAGIC_LIB_HD  HD)
