@@ -32,19 +32,20 @@ Therefore, launch: `yarpdev --list`
 
 and see if `hapticdevicewrapper`, `hapticdeviceclient`, `geomagicdriver` are listed down.
 
-You can then run the driver in two ways:
+You can then run the driver in two ways. For example, for the `geomagicdriver` it holds:
 
 1. `yarpdev --device geomagicdriver [option-list]`
 2. `robotInterface --context geomagic --config geomagic.xml`
 
 The available options are:
-- `device-id` "_id_": a string with the name of the Geomagic Touch device that has been paired (`Default Device` by default).
+- `device-id` "_id_": a string with the name of the physical device that has been instantiated.
 - `name` "_port-stem-name_": a string specifying the ports stem-name (`hapticdevice` by default).
 - `period` _period_: an integer that specifies the period in `ms` (`20 ms` by default).
 - `verbosity` _level_: an integer accounting for the enabled verbosity level (`0` by default).
 
 In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding
-`geomagic.xml` file that is installed in `$hapticdevice_DIR/share/hapticdevice/context/geomagic` and possibly customized using the `yarp-config` tool.
+`xml` files that are installed in `$hapticdevice_DIR/share/hapticdevice/context` path and possibly
+customized using the `yarp-config` tool.
 
 ## Connecting to the YARP driver
 A YARP module that wants to connect to an haptic device needs to contain the following instructions:
