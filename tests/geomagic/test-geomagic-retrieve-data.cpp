@@ -12,14 +12,14 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
-#include <geomagic/IGeomagic.h>
+#include <hapticdevice/IHapticDevice.h>
 
 using namespace std;
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
-using namespace geomagic;
+using namespace hapticdevice;
 
 
 /**********************************************************/
@@ -27,7 +27,7 @@ class TestModule: public RFModule
 {
 protected:
     PolyDriver driver;
-    IGeomagic *igeo;
+    IHapticDevice *igeo;
     
 public:
     /**********************************************************/
@@ -40,8 +40,8 @@ public:
             option.put("device","geomagicdriver");
         else
         {
-            option.put("device","geomagicclient"); 
-            option.put("remote","/geomagic");
+            option.put("device","hapticdeviceclient"); 
+            option.put("remote","/hapticdevice");
             option.put("local","/client");
         }
 

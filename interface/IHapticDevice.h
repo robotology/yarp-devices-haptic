@@ -7,20 +7,20 @@
  *
  */
 
-#ifndef __GEOMAGIC_INTERFACE__
-#define __GEOMAGIC_INTERFACE__
+#ifndef __HAPTICDEVICE_INTERFACE__
+#define __HAPTICDEVICE_INTERFACE__
 
 #include <yarp/sig/Vector.h>
 #include <yarp/sig/Matrix.h>
 
-namespace geomagic {
+namespace hapticdevice {
     /**
-     * A generic Geomagic interface
+     * A generic interface for an haptic device.
      */
-    class IGeomagic
+    class IHapticDevice
     {
     public:
-        virtual ~IGeomagic() { }
+        virtual ~IHapticDevice() { }
 
         /**
          * Get the instantaneous position.

@@ -1,7 +1,7 @@
 Examples of Geomagic YARP Clients
 =================================
 
-## iCub Teleoperation
+## iCub Teleoperation with Geomagic Haptic Device
 
 ##### Prerequisities
 - Geomagic YARP Device Wrapper is running.

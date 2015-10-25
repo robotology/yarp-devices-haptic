@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef __GEOMAGIC_CLIENT__
-#define __GEOMAGIC_CLIENT__
+#ifndef __HAPTICDEVICE_CLIENT__
+#define __HAPTICDEVICE_CLIENT__
 
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/BufferedPort.h>
@@ -20,13 +20,11 @@
 #include <yarp/sig/Vector.h>
 #include <yarp/sig/Matrix.h>
 
-#include "IGeomagic.h"
-
-class GeomagicClient;
+#include "IHapticDevice.h"
 
 class StatePort : public yarp::os::BufferedPort<yarp::os::Bottle>
 {
-    GeomagicClient *client;
+    HapticDeviceClient *client;
     void onRead(yarp::os::Bottle &state);
 
 public:
@@ -35,18 +33,18 @@ public:
         useCallback();
     }
 
-    void setClient(GeomagicClient *client_)
+    void setClient(HapticDeviceClient *client_)
     {
         this->client=client_;
     }
 };
 
 /**
- * Geomagic client
+ * Haptic Device client.
  */
-class GeomagicClient : public yarp::dev::DeviceDriver,
-                       public yarp::dev::IPreciselyTimed,
-                       public geomagic::IGeomagic
+class HapticDeviceClient : public yarp::dev::DeviceDriver,
+                           public yarp::dev::IPreciselyTimed,
+                           public hapticdevice::IHapticDevice
 {
 protected:    
     int verbosity;
@@ -61,13 +59,13 @@ protected:
     yarp::os::Mutex mutex;
 
 public:
-    GeomagicClient();
-    ~GeomagicClient() { }
+    HapticDeviceClient();
+    ~HapticDeviceClient() { }
 
     bool open(yarp::os::Searchable &config);
     bool close();
 
-    // IGeomagic Interface
+    // IHapticDevice Interface
     bool getPosition(yarp::sig::Vector &pos);
     bool getOrientation(yarp::sig::Vector &rpy);
     bool getButtons(yarp::sig::Vector &buttons);

@@ -17,7 +17,7 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
-#include <geomagic/IGeomagic.h>
+#include <hapticdevice/IHapticDevice.h>
 
 #define DEG2RAD     (M_PI/180.0)
 #define RAD2DEG     (180.0/M_PI)
@@ -27,7 +27,7 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
-using namespace geomagic;
+using namespace hapticdevice;
 
 
 /**********************************************************/
@@ -43,7 +43,7 @@ protected:
     IPositionControl2 *ipos;
     IVelocityControl2 *ivel;
     IGazeControl      *igaze;
-    IGeomagic         *igeo;
+    IHapticDevice     *igeo;
     
     BufferedPort<Bottle> forceFbPort;
     RpcClient simPort;
@@ -91,7 +91,7 @@ public:
         maxForce=fabs(rf.check("max-force-feedback",Value(20.0)).asDouble());
         bool torso=rf.check("torso",Value("on")).asString()=="on";
 
-        Property optGeo("(device geomagicclient)");
+        Property optGeo("(device hapticdeviceclient)");
         optGeo.put("remote",("/"+geomagic).c_str());
         optGeo.put("local",("/"+name+"/geomagic").c_str());
         if (!drvGeomagic.open(optGeo))

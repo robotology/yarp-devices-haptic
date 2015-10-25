@@ -12,14 +12,14 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
-#include <geomagic/IGeomagic.h>
+#include <hapticdevice/IHapticDevice.h>
 
 using namespace std;
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
-using namespace geomagic;
+using namespace hapticdevice;
 
 
 /**********************************************************/
@@ -27,10 +27,7 @@ class TestModule: public RFModule
 {
 protected:
     PolyDriver driver;
-    IGeomagic *igeo;
-
-    Vector force;
-    double t0;
+    IHapticDevice *igeo;
     
 public:
     /**********************************************************/
@@ -43,8 +40,8 @@ public:
             option.put("device","geomagicdriver");
         else
         {
-            option.put("device","geomagicclient"); 
-            option.put("remote","/geomagic");
+            option.put("device","hapticdeviceclient"); 
+            option.put("remote","/hapticdevice");
             option.put("local","/client");
         }
 
@@ -52,23 +49,12 @@ public:
             return false;
 
         driver.view(igeo);
-        igeo->setCartesianForceMode();
-
-        igeo->getMaxFeedback(force);
-
-        force[0]/=3.0;
-        force[1]=force[2]=0.0;
-
-        t0=Time::now();
         return true;
     }
 
     /**********************************************************/
     bool close()
     {
-        igeo->stopFeedback();
-        yInfo("stopping feedback control");
-
         driver.close();
         return true;
     }
@@ -82,16 +68,31 @@ public:
     /**********************************************************/
     bool updateModule()
     {
-        double t=Time::now();
-        if (t-t0>2.0)
-        {
-            force=-1.0*force;
-            t0=t;
-        }
+        Vector pos,rpy,buttons;
+        igeo->getPosition(pos);
+        igeo->getOrientation(rpy);
+        igeo->getButtons(buttons);
 
-        igeo->setFeedback(force);
-        yInfo("applying (%s) [N] force feedback",
-              force.toString(3,3).c_str());
+        if (buttons[0]!=0.0)
+        {
+            Matrix T1;
+            igeo->getTransformation(T1);
+            T1=SE3inv(T1);
+
+            Matrix T2=eye(4,4);
+            T2(0,3)=pos[0];
+            T2(1,3)=pos[1];
+            T2(2,3)=pos[2];
+
+            igeo->setTransformation(SE3inv(T1*T2));
+        }
+        else if (buttons[1]!=0.0)
+            igeo->setTransformation(eye(4,4));
+
+        yInfo("pos=(%s); rpy=(%s); buttons=(%s)",
+              pos.toString(3,3).c_str(),
+              rpy.toString(3,3).c_str(),
+              buttons.toString(3,3).c_str());
 
         return true; 
     }

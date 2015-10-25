@@ -7,12 +7,12 @@
  *
  */
 
-#ifndef __GEOMAGIC_COMMON__
-#define __GEOMAGIC_COMMON__
+#ifndef __HAPTICDEVICE_COMMON__
+#define __HAPTICDEVICE_COMMON__
 
 #include <yarp/os/Vocab.h>
 
-namespace geomagic {
+namespace hapticdevice {
     enum {
         ack                = VOCAB3('a','c','k'),
         nack               = VOCAB4('n','a','c','k'),

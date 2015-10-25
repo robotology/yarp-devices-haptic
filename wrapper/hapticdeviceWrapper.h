@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef __GEOMAGIC_WRAPPER__
-#define __GEOMAGIC_WRAPPER__
+#ifndef __HAPTICDEVICE_WRAPPER__
+#define __HAPTICDEVICE_WRAPPER__
 
 #include <string>
 
@@ -23,15 +23,15 @@
 #include <yarp/dev/Wrapper.h>
 #include <yarp/sig/Vector.h>
 
-#include "IGeomagic.h"
+#include "IHapticDevice.h"
 
 /**
- * Geomagic wrapper
+ * Haptic Device wrapper
  */
-class GeomagicWrapper : public yarp::dev::DeviceDriver,
-                        public yarp::dev::IMultipleWrapper,
-                        public yarp::os::RateThread,
-                        public yarp::os::PortReader
+class HapticDeviceWrapper : public yarp::dev::DeviceDriver,
+                            public yarp::dev::IMultipleWrapper,
+                            public yarp::os::RateThread,
+                            public yarp::os::PortReader
 {
 protected:
     std::string portStemName;
@@ -45,7 +45,7 @@ protected:
     yarp::os::Stamp stamp;
 
     yarp::dev::PolyDriver driver;
-    geomagic::IGeomagic *device;
+    hapticdevice::IHapticDevice *device;
 
     yarp::sig::Vector fdbck;
     bool applyFdbck;
@@ -56,13 +56,13 @@ protected:
     void run();
 
 public:
-    GeomagicWrapper();
-    ~GeomagicWrapper();
+    HapticDeviceWrapper();
+    ~HapticDeviceWrapper();
 
     bool open(yarp::os::Searchable &config);
     bool close();
 
-    void attach(geomagic::IGeomagic *dev);
+    void attach(hapticdevice::IHapticDevice *dev);
     void detach();
 
     bool attachAll(const yarp::dev::PolyDriverList &p);
