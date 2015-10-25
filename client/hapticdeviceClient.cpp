@@ -13,7 +13,7 @@
 #include <yarp/os/Network.h>
 #include <yarp/os/LockGuard.h>
 
-#include "geomagicClient.h"
+#include "hapticdeviceClient.h"
 #include "common.h"
 
 using namespace std;
@@ -21,7 +21,7 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 
-using namespace geomagic;
+using namespace hapticdevice;
 
 
 /*********************************************************************/
@@ -37,23 +37,23 @@ void StatePort::onRead(Bottle &state)
 
 
 /*********************************************************************/
-GeomagicClient::GeomagicClient() : state(8,0.0)
+HapticDeviceClient::HapticDeviceClient() : state(8,0.0)
 {
 }
 
 
 /*********************************************************************/
-bool GeomagicClient::open(Searchable &config)
+bool HapticDeviceClient::open(Searchable &config)
 {
     if (!config.check("remote"))
     {
-        yError("*** Geomagic Client: \"remote\" option missing, failed to open!");
+        yError("*** Haptic Device Client: \"remote\" option missing, failed to open!");
         return false;
     }
 
     if (!config.check("local"))
     {
-        yError("*** Geomagic Client: \"local\" option missing, failed to open!");
+        yError("*** Haptic Device Client: \"local\" option missing, failed to open!");
         return false;
     }
 
@@ -77,33 +77,33 @@ bool GeomagicClient::open(Searchable &config)
         feedbackPort.close();
         rpcPort.close();
 
-        yError("*** Geomagic Client: unable to connect to Geomagic Server, failed to open!");
+        yError("*** Haptic Device Client: unable to connect to Haptic Device Wrapper, failed to open!");
         return false;
     }
 
     if (verbosity>0)
-        yInfo("*** Geomagic Client: opened");
+        yInfo("*** Haptic Device Client: opened");
 
     return true;
 }
 
 
 /*********************************************************************/
-bool GeomagicClient::close()
+bool HapticDeviceClient::close()
 {
     statePort.close();
     feedbackPort.close();
     rpcPort.close();
 
     if (verbosity>0)
-        yInfo("*** Geomagic Client: closed");
+        yInfo("*** Haptic Device Client: closed");
 
     return true;
 }
 
 
 /*********************************************************************/
-bool GeomagicClient::getPosition(Vector &pos)
+bool HapticDeviceClient::getPosition(Vector &pos)
 {
     LockGuard lg(mutex);
     pos=state.subVector(0,2);
@@ -112,7 +112,7 @@ bool GeomagicClient::getPosition(Vector &pos)
 
 
 /*********************************************************************/
-bool GeomagicClient::getOrientation(Vector &rpy)
+bool HapticDeviceClient::getOrientation(Vector &rpy)
 {
     LockGuard lg(mutex);
     rpy=state.subVector(3,5);
@@ -121,7 +121,7 @@ bool GeomagicClient::getOrientation(Vector &rpy)
 
 
 /*********************************************************************/
-bool GeomagicClient::getButtons(Vector &buttons)
+bool HapticDeviceClient::getButtons(Vector &buttons)
 {
     LockGuard lg(mutex);
     buttons=state.subVector(6,7);
@@ -130,17 +130,17 @@ bool GeomagicClient::getButtons(Vector &buttons)
 
 
 /*********************************************************************/
-bool GeomagicClient::isCartesianForceModeEnabled(bool &ret)
+bool HapticDeviceClient::isCartesianForceModeEnabled(bool &ret)
 {
     Bottle cmd,rep;
-    cmd.addVocab(geomagic::is_cartesian);
+    cmd.addVocab(hapticdevice::is_cartesian);
     if (!rpcPort.write(cmd,rep))
     {
-        yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");
+        yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    if (rep.get(0).asVocab()==geomagic::ack)
+    if (rep.get(0).asVocab()==hapticdevice::ack)
     {
         ret=(rep.get(1).asInt()!=0);
         return true;
@@ -151,47 +151,47 @@ bool GeomagicClient::isCartesianForceModeEnabled(bool &ret)
 
 
 /*********************************************************************/
-bool GeomagicClient::setCartesianForceMode()
+bool HapticDeviceClient::setCartesianForceMode()
 {
     Bottle cmd,rep;
-    cmd.addVocab(geomagic::set_cartesian);
+    cmd.addVocab(hapticdevice::set_cartesian);
     if (!rpcPort.write(cmd,rep))
     {
-        yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");
+        yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    return (rep.get(0).asVocab()==geomagic::ack);
+    return (rep.get(0).asVocab()==hapticdevice::ack);
 }
 
 
 /*********************************************************************/
-bool GeomagicClient::setJointTorqueMode()
+bool HapticDeviceClient::setJointTorqueMode()
 {
     Bottle cmd,rep;
-    cmd.addVocab(geomagic::set_joint);
+    cmd.addVocab(hapticdevice::set_joint);
     if (!rpcPort.write(cmd,rep))
     {
-        yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");
+        yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    return (rep.get(0).asVocab()==geomagic::ack);
+    return (rep.get(0).asVocab()==hapticdevice::ack);
 }
 
 
 /*********************************************************************/
-bool GeomagicClient::getMaxFeedback(Vector &max)
+bool HapticDeviceClient::getMaxFeedback(Vector &max)
 {
     Bottle cmd,rep;
-    cmd.addVocab(geomagic::get_max);
+    cmd.addVocab(hapticdevice::get_max);
     if (!rpcPort.write(cmd,rep))
     {
-        yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");
+        yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    if (rep.get(0).asVocab()==geomagic::ack)
+    if (rep.get(0).asVocab()==hapticdevice::ack)
     {
         if (Bottle *payload=rep.get(1).asList())
         {
@@ -208,7 +208,7 @@ bool GeomagicClient::getMaxFeedback(Vector &max)
 
 
 /*********************************************************************/
-bool GeomagicClient::setFeedback(const Vector &fdbck)
+bool HapticDeviceClient::setFeedback(const Vector &fdbck)
 {
     feedbackPort.prepare().read(const_cast<Vector&>(fdbck));
     feedbackPort.writeStrict();
@@ -217,32 +217,32 @@ bool GeomagicClient::setFeedback(const Vector &fdbck)
 
 
 /*********************************************************************/
-bool GeomagicClient::stopFeedback()
+bool HapticDeviceClient::stopFeedback()
 {
     Bottle cmd,rep;
-    cmd.addVocab(geomagic::stop_feedback);
+    cmd.addVocab(hapticdevice::stop_feedback);
     if (!rpcPort.write(cmd,rep))
     {
-        yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");
+        yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    return (rep.get(0).asVocab()==geomagic::ack);
+    return (rep.get(0).asVocab()==hapticdevice::ack);
 }
 
 
 /*********************************************************************/
-bool GeomagicClient::getTransformation(Matrix &T)
+bool HapticDeviceClient::getTransformation(Matrix &T)
 {
     Bottle cmd,rep;
-    cmd.addVocab(geomagic::get_transformation);
+    cmd.addVocab(hapticdevice::get_transformation);
     if (!rpcPort.write(cmd,rep))
     {
-        yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");
+        yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    if (rep.get(0).asVocab()==geomagic::ack)
+    if (rep.get(0).asVocab()==hapticdevice::ack)
     {
         if (Bottle *payload=rep.get(1).asList())
         {
@@ -265,23 +265,23 @@ bool GeomagicClient::getTransformation(Matrix &T)
 
 
 /*********************************************************************/
-bool GeomagicClient::setTransformation(const Matrix &T)
+bool HapticDeviceClient::setTransformation(const Matrix &T)
 {
     Bottle cmd,rep;
-    cmd.addVocab(geomagic::set_transformation);
+    cmd.addVocab(hapticdevice::set_transformation);
     cmd.addList().read(const_cast<Matrix&>(T));
     if (!rpcPort.write(cmd,rep))
     {
-        yError("*** Geomagic Client: unable to get reply from Geomagic Wrapper!");
+        yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    return (rep.get(0).asVocab()==geomagic::ack);
+    return (rep.get(0).asVocab()==hapticdevice::ack);
 }
 
 
 /*********************************************************************/
-Stamp GeomagicClient::getLastInputStamp()
+Stamp HapticDeviceClient::getLastInputStamp()
 {
     LockGuard lg(mutex);
     return stamp;

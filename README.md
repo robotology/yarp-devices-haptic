@@ -1,7 +1,7 @@
-Geomagic YARP Device Driver
-===========================
+Generic YARP Driver for Haptic Devices
+======================================
 
-## Installation
+## Installation of Physical Drivers
 
 ##### Geomagic Touch Drivers and API
 Login at http://developer.geomagic.com, download the drivers and the SDK
@@ -18,19 +18,19 @@ prior to pairing the device. This will make the driver work outside US.
 - [icub-contrib-common](https://github.com/robotology/icub-contrib-common) (only for examples and tests)
 
 ## Compiling and Installing the YARP driver
-1. Set up the building project by means of **cmake**. Remember to tick on the three drivers: `geomagicdriver`,
-`geomagicwrapper`, `geomagicclient`.
+1. Set up the building project by means of **cmake**. Remember to tick on the drivers:
+`hapticdevicewrapper`, `hapticdeviceclient` and the physical drivers you need, e.g. `geomagicdriver`.
 2. Compile and install the project.
-3. Set up the environment variable **`geomagic_DIR`** pointing where the project gets installed
+3. Set up the environment variable **`hapticdevice_DIR`** pointing where the project gets installed
 (should be the same path used for `CMAKE_INSTALL_PREFIX`).
-4. Append to the environment variable **`YARP_DATA_DIRS`** the path `$geomagic_DIR/share/geomagic`.
+4. Append to the environment variable **`YARP_DATA_DIRS`** the path `$hapticdevice_DIR/share/hapticdevice`.
 
 ## Running the YARP driver
 First, check whether the YARP drivers got installed correctly.
 
 Therefore, launch: `yarpdev --list`
 
-and see if `geomagicdriver`, `geomagicwrapper`, `geomagicclient` are listed down.
+and see if `hapticdevicewrapper`, `hapticdeviceclient`, `geomagicdriver` are listed down.
 
 You can then run the driver in two ways:
 
@@ -39,42 +39,42 @@ You can then run the driver in two ways:
 
 The available options are:
 - `device-id` "_id_": a string with the name of the Geomagic Touch device that has been paired (`Default Device` by default).
-- `name` "_port-stem-name_": a string specifying the ports stem-name (`geomagic` by default).
+- `name` "_port-stem-name_": a string specifying the ports stem-name (`hapticdevice` by default).
 - `period` _period_: an integer that specifies the period in `ms` (`20 ms` by default).
 - `verbosity` _level_: an integer accounting for the enabled verbosity level (`0` by default).
 
 In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding
-`geomagic.xml` file that is installed in `$geomagic_DIR/share/geomagic/context/geomagic` and possibly customized using the `yarp-config` tool.
+`geomagic.xml` file that is installed in `$hapticdevice_DIR/share/hapticdevice/context/geomagic` and possibly customized using the `yarp-config` tool.
 
 ## Connecting to the YARP driver
-A YARP module that wants to connect to the Geomagic Touch YARP driver needs to be designed containing the following instructions:
+A YARP module that wants to connect to an haptic device needs to contain the following instructions:
 
 CMAKE directives:
 ```cmake
-find_package(geomagic REQUIRED)
-include_directories(${geomagic_INCLUDE_DIRS})
+find_package(hapticdevice REQUIRED)
+include_directories(${hapticdevice_INCLUDE_DIRS})
 ```
 
 C++ code:
 ```cpp
-#include <geomagic/IGeomagic.h>
+#include <hapticdevice/IHapticDevice.h>
 
-Property option("(device geomagicclient)");
-option.put("remote","/geomagic");   // or whatever wrapper stem-name
+Property option("(device hapticdeviceclient)");
+option.put("remote","/hapticdevice");   // or whatever wrapper stem-name
 option.put("local","/local-port");  // any local ports stem-name
 
 PolyDriver driver;
 driver.open(option);
 
-geomagic::IGeomagic *igeomagic;
-driver.view(igeomagic);
+hapticdevice::IHapticDevice *ihap;
+driver.view(ihap);
 ```
 
-The **IGeomagic** YARP interface is documented here: [http://robotology.github.com/geomagic](http://robotology.github.com/geomagic).
+The **IHapticDevice** YARP interface is documented here: [http://robotology.github.com/haptic-device](http://robotology.github.com/haptic-device).
 
 ## Client Examples
 Examples of modules connecting to the YARP driver can be found
-[**`here`**](https://github.com/robotology/geomagic/tree/master/examples).
+[**`here`**](https://github.com/robotology/haptic-device/tree/master/examples).
 
 ## Authors
 - [`Ugo Pattacini`](https://github.com/pattacini)

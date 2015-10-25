@@ -20,7 +20,7 @@
 #include <HDU/hduVector.h>
 #include <HDU/hduError.h>
 
-#include "IGeomagic.h"
+#include "IHapticDevice.h"
 
 /**
  * Data retrieved from HDAPI.
@@ -46,7 +46,7 @@ typedef struct
  * Geomagic driver
  */
 class GeomagicDriver : public yarp::dev::DeviceDriver,
-                       public geomagic::IGeomagic
+                       public hapticdevice::IHapticDevice
 {
 protected:
     bool configured;
@@ -82,7 +82,7 @@ public:
     bool open(yarp::os::Searchable &config);
     bool close();
 
-    // IGeomagic Interface
+    // IHapticDevice Interface
     bool getPosition(yarp::sig::Vector &pos);
     bool getOrientation(yarp::sig::Vector &rpy);
     bool getButtons(yarp::sig::Vector &buttons);

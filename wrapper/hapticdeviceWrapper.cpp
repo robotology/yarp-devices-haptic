@@ -12,11 +12,11 @@
 #include <yarp/sig/Matrix.h>
 #include <yarp/math/Math.h>
 
-#include "geomagicWrapper.h"
+#include "hapticdeviceWrapper.h"
 #include "common.h"
 
-#define GEOMAGIC_WRAPPER_DEFAULT_NAME       "geomagic"
-#define GEOMAGIC_WRAPPER_DEFAULT_PERIOD     20          // [ms]
+#define HAPTICDEVICE_WRAPPER_DEFAULT_NAME       "hapticdevice"
+#define HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD     20          // [ms]
 
 using namespace std;
 using namespace yarp::os;
@@ -24,17 +24,18 @@ using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
 
-using namespace geomagic;
+using namespace hapticdevice;
 
 /*********************************************************************/
-GeomagicWrapper::GeomagicWrapper() : RateThread(GEOMAGIC_WRAPPER_DEFAULT_PERIOD),
-                                     device(NULL), applyFdbck(false), fdbck(3,0.0)
+HapticDeviceWrapper::HapticDeviceWrapper() :
+                     RateThread(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD),
+                     device(NULL), applyFdbck(false), fdbck(3,0.0)
 {
 }
 
 
 /*********************************************************************/
-GeomagicWrapper::~GeomagicWrapper()
+HapticDeviceWrapper::~HapticDeviceWrapper()
 {
     threadRelease();
     device=NULL;
@@ -42,13 +43,13 @@ GeomagicWrapper::~GeomagicWrapper()
 
 
 /*********************************************************************/
-bool GeomagicWrapper::open(Searchable &config)
+bool HapticDeviceWrapper::open(Searchable &config)
 {
     portStemName=config.check("name",
-                              Value(GEOMAGIC_WRAPPER_DEFAULT_NAME)).asString().c_str();
+                              Value(HAPTICDEVICE_WRAPPER_DEFAULT_NAME)).asString().c_str();
     verbosity=config.check("verbosity",Value(0)).asInt();
     int period=config.check("period",
-                            Value(GEOMAGIC_WRAPPER_DEFAULT_PERIOD)).asInt();
+                            Value(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD)).asInt();
     setRate(period);
 
     if (config.check("subdevice"))
@@ -60,32 +61,32 @@ bool GeomagicWrapper::open(Searchable &config)
 
         if (driver.open(p))
         {
-            IGeomagic *g;
-            driver.view(g);
-            attach(g);
+            IHapticDevice *d;
+            driver.view(d);
+            attach(d);
         }
         else
         {
-            yError("*** Geomagic Wrapper: failed to open the driver!");
+            yError("*** Haptic Device Wrapper: failed to open the driver!");
             return false;
         }
     }    
 
     if (verbosity>0)
-        yInfo("*** Geomagic Wrapper: opened");
+        yInfo("*** Haptic Device Wrapper: opened");
 
     return true;
 }
 
 
 /*********************************************************************/
-bool GeomagicWrapper::close()
+bool HapticDeviceWrapper::close()
 {
     if (isRunning())
     {
         askToStop();
         if (verbosity>0)
-            yInfo("*** Geomagic Wrapper: stopped");
+            yInfo("*** Haptic Device Wrapper: stopped");
     }
 
     detachAll();
@@ -94,36 +95,36 @@ bool GeomagicWrapper::close()
         driver.close();
     
     if (verbosity>0)
-        yInfo("*** Geomagic Wrapper: closed");
+        yInfo("*** Haptic Device Wrapper: closed");
 
     return true;
 }
 
 
 /*********************************************************************/
-void GeomagicWrapper::attach(IGeomagic *dev)
+void HapticDeviceWrapper::attach(IHapticDevice *dev)
 {
     device=dev;
 
     start();
     if (verbosity>0)
-        yInfo("*** Geomagic Wrapper: started");
+        yInfo("*** Haptic Device Wrapper: started");
 }
 
 
 /*********************************************************************/
-void GeomagicWrapper::detach()
+void HapticDeviceWrapper::detach()
 {
     device=NULL;
 }
 
 
 /*********************************************************************/
-bool GeomagicWrapper::attachAll(const PolyDriverList &p)
+bool HapticDeviceWrapper::attachAll(const PolyDriverList &p)
 {
     if (p.size()!=1)
     {
-        yError("*** Geomagic Wrapper: cannot attach more than one device");
+        yError("*** Haptic Device Wrapper: cannot attach more than one device");
         return false;
     }
 
@@ -133,20 +134,20 @@ bool GeomagicWrapper::attachAll(const PolyDriverList &p)
 
     if (device==NULL)
     {
-        yError("*** Geomagic Wrapper: invalid device"); 
+        yError("*** Haptic Device Wrapper: invalid device"); 
         return false;
     }
 
     start();
     if (verbosity>0)
-        yInfo("*** Geomagic Wrapper: started");
+        yInfo("*** Haptic Device Wrapper: started");
     
     return true;
 }
 
 
 /*********************************************************************/
-bool GeomagicWrapper::detachAll()
+bool HapticDeviceWrapper::detachAll()
 {
     device=NULL;
     return true;
@@ -154,7 +155,7 @@ bool GeomagicWrapper::detachAll()
 
 
 /*********************************************************************/
-bool GeomagicWrapper::read(ConnectionReader &connection)
+bool HapticDeviceWrapper::read(ConnectionReader &connection)
 {
     Bottle cmd;
     if (!cmd.read(connection))
@@ -166,7 +167,7 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
     {
         LockGuard lg(mutex);
 
-        if (tag==geomagic::set_transformation)
+        if (tag==hapticdevice::set_transformation)
         {
             if (cmd.size()>=2)
             {
@@ -182,67 +183,67 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
                                 T(r,c)=vals->get(T.rows()*r+c).asDouble();
             
                         if (device->setTransformation(T))
-                            rep.addVocab(geomagic::ack);
+                            rep.addVocab(hapticdevice::ack);
                         else
-                            rep.addVocab(geomagic::nack);
+                            rep.addVocab(hapticdevice::nack);
                     }
                 }
             }
         }
-        else if (tag==geomagic::get_transformation)
+        else if (tag==hapticdevice::get_transformation)
         {
             Matrix T;
             if (device->getTransformation(T))
             {
-                rep.addVocab(geomagic::ack);
+                rep.addVocab(hapticdevice::ack);
                 rep.addList().read(T);
             }
             else
-                rep.addVocab(geomagic::nack);
+                rep.addVocab(hapticdevice::nack);
         }
-        else if (tag==geomagic::stop_feedback)
+        else if (tag==hapticdevice::stop_feedback)
         {
             fdbck=0.0;
             device->stopFeedback();
             applyFdbck=false;
-            rep.addVocab(geomagic::ack);
+            rep.addVocab(hapticdevice::ack);
         }
-        else if (tag==geomagic::is_cartesian)
+        else if (tag==hapticdevice::is_cartesian)
         {
             bool ret;
             if (device->isCartesianForceModeEnabled(ret))
             {
-                rep.addVocab(geomagic::ack);
+                rep.addVocab(hapticdevice::ack);
                 rep.addInt(ret?1:0);
             }
             else
-                rep.addVocab(geomagic::nack);
+                rep.addVocab(hapticdevice::nack);
         }
-        else if (tag==geomagic::set_cartesian)
+        else if (tag==hapticdevice::set_cartesian)
         {
             rep.addVocab(device->setCartesianForceMode()?
-                         geomagic::ack:geomagic::nack);
+                         hapticdevice::ack:hapticdevice::nack);
         }
-        else if (tag==geomagic::set_joint)
+        else if (tag==hapticdevice::set_joint)
         {
             rep.addVocab(device->setJointTorqueMode()?
-                         geomagic::ack:geomagic::nack);
+                         hapticdevice::ack:hapticdevice::nack);
         }
-        else if (tag==geomagic::get_max)
+        else if (tag==hapticdevice::get_max)
         {
             Vector max;
             if (device->getMaxFeedback(max))
             {               
-                rep.addVocab(geomagic::ack);
+                rep.addVocab(hapticdevice::ack);
                 rep.addList().read(max);                
             }
             else
-                rep.addVocab(geomagic::nack);
+                rep.addVocab(hapticdevice::nack);
         }
     }
 
     if (rep.size()==0)
-        rep.addVocab(geomagic::nack);
+        rep.addVocab(hapticdevice::nack);
 
     ConnectionWriter *writer=connection.getWriter();
     if (writer!=NULL)
@@ -253,7 +254,7 @@ bool GeomagicWrapper::read(ConnectionReader &connection)
 
 
 /*********************************************************************/
-bool GeomagicWrapper::threadInit()
+bool HapticDeviceWrapper::threadInit()
 {
     statePort.open(("/"+portStemName+"/state:o").c_str());
     feedbackPort.open(("/"+portStemName+"/feedback:i").c_str());
@@ -265,7 +266,7 @@ bool GeomagicWrapper::threadInit()
 
 
 /*********************************************************************/
-void GeomagicWrapper::threadRelease()
+void HapticDeviceWrapper::threadRelease()
 {
     statePort.interrupt();
     feedbackPort.interrupt();
@@ -278,7 +279,7 @@ void GeomagicWrapper::threadRelease()
 
 
 /*********************************************************************/
-void GeomagicWrapper::run()
+void HapticDeviceWrapper::run()
 {
     if (device!=NULL)
     {

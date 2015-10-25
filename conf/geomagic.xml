@@ -5,7 +5,7 @@
         <param name="verbosity"> 1 </param>
     </device>
 
-    <device name="geomagic_wrapper" type="geomagicwrapper">
+    <device name="hapticdevice_wrapper" type="hapticdevicewrapper">
 
         <param name="name"> geomagic </param>
         <param name="period"> 10 </param>
@@ -13,7 +13,7 @@
 
         <action phase="startup" level="1" type="attach">
             <paramlist name="networks">
-  	          <elem name="geomagic"> geomagic_driver </elem>
+              <elem name="geomagic"> geomagic_driver </elem>
             </paramlist>
         </action>
 

@@ -2,9 +2,9 @@
 # Authors: Ugo Pattacini <ugo.pattacini@iit.it>
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-yarp_prepare_device(geomagicdriver TYPE GeomagicDriver INCLUDE geomagicDriver.h WRAPPER geomagicwrapper)
+yarp_prepare_device(geomagicdriver TYPE GeomagicDriver INCLUDE geomagicDriver.h WRAPPER hapticdevicewrapper)
 
-if(ENABLE_geomagicmod_geomagicdriver)
+if(ENABLE_hapticdevicemod_geomagicdriver)
     if(UNIX)
         set(GEOMAGIC_INCLUDE_DIRS)
         find_library(GEOMAGIC_LIB_HD  HD)
@@ -76,12 +76,12 @@ if(ENABLE_geomagicmod_geomagicdriver)
     include_directories(${PROJECT_SOURCE_DIR}/interface)
 
     yarp_add_plugin(geomagicdriver geomagicDriver.h geomagicDriver.cpp
-                    ${PROJECT_SOURCE_DIR}/interface/IGeomagic.h)
+                    ${PROJECT_SOURCE_DIR}/interface/IHapticDevice.h)
  
     target_link_libraries(geomagicdriver ${YARP_LIBRARIES} ${GEOMAGIC_LIBRARIES})
     yarp_install(TARGETS geomagicdriver
                  COMPONENT Runtime
-                 LIBRARY DESTINATION ${GEOMAGIC_DYNAMIC_PLUGINS_INSTALL_DIR})
+                 LIBRARY DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR})
 
-    yarp_install(FILES geomagicdriver.ini DESTINATION ${GEOMAGIC_PLUGIN_MANIFESTS_INSTALL_DIR})
+    yarp_install(FILES geomagicdriver.ini DESTINATION ${HAPTICDEVICE_PLUGIN_MANIFESTS_INSTALL_DIR})
 endif()
