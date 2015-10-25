@@ -78,10 +78,10 @@ Examples of modules connecting to the YARP driver can be found
 [**`here`**](https://github.com/robotology/haptic-device/tree/master/examples).
 
 ## Authors
-- [`Ugo Pattacini`](https://github.com/pattacini)
+- [`Ugo Pattacini`](https://github.com/pattacini):
   - `hapticdevicewrapper`
   - `hapticdeviceclient`
-- [`Manuelito Scola`](https://github.com/manuelitoscola)
+- [`Manuelito Scola`](https://github.com/manuelitoscola):
   - `geomagicdriver`
 
 ## License
