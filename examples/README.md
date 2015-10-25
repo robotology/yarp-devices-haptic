@@ -1,14 +1,17 @@
-Examples of Geomagic YARP Clients
+Examples of YARP Client plugins
 =================================
 
 ## iCub Teleoperation with Geomagic Haptic Device
+
+##### Building
+Cmake the **`teleop-icub`** project.
 
 ##### Prerequisities
 - Geomagic YARP Device Wrapper is running.
 - icub/icubSim is running with the Cartesian Controllers available.
 - Gaze Controller is running too, but that's optional.
 
-## Command-line Options
+##### Command-line Options
 - `name` "_port-stem-name_": a string specifying the ports stem-name (`teleop-icub` by default).
 - `geomagic` _port-stem-name_: a string specifying the remote driver to connect to.
 - `robot` _name_: a string specifying the robot name (`icub` by default).
@@ -22,7 +25,7 @@ Examples of Geomagic YARP Clients
 
 The port _/teleop-icub/force-feedback:i_ does accept three numbers to implement the 3D force feedback on the tip of the device.
 
-## How to Teleoperate the icub/icubSim
+##### How to Teleoperate the icub/icubSim
 The first button is the greyest.
 
 - By pressing the first button once, you will switch the control mode: from "`xyz`" (position only) to "`full`" (position+orientation).
