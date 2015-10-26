@@ -210,9 +210,14 @@ bool HapticDeviceClient::getMaxFeedback(Vector &max)
 /*********************************************************************/
 bool HapticDeviceClient::setFeedback(const Vector &fdbck)
 {
-    feedbackPort.prepare().read(const_cast<Vector&>(fdbck));
-    feedbackPort.writeStrict();
-    return true;
+    if (fdbck.length()==3)
+    {
+        feedbackPort.prepare().read(const_cast<Vector&>(fdbck)); 
+        feedbackPort.writeStrict();
+        return true;
+    }
+    else
+        return false;
 }
 
 
