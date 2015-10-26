@@ -332,7 +332,7 @@ public:
                 s0=triggered;
             else if (s0==triggered)
             {
-                if (++c0*getPeriod()>0.1)
+                if (++c0*getPeriod()>0.5)
                 {
                     pos0[0]=pos[0];
                     pos0[1]=pos[1];
@@ -424,7 +424,7 @@ public:
                 s1=triggered;
             else if (s1==triggered)
             {
-                if (++c1*getPeriod()>0.1)
+                if (++c1*getPeriod()>0.5)
                 {
                     imod->setControlModes(joints.size(),joints.getFirst(),modes.getFirst());
                     s1=running;
