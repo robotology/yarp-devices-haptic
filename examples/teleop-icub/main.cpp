@@ -87,8 +87,8 @@ public:
         part=rf.check("part",Value("right_arm")).asString().c_str();
         simulator=rf.check("simulator",Value("off")).asString()=="on";
         gaze=rf.check("gaze",Value("off")).asString()=="on";
-        minForce=fabs(rf.check("min-force-feedback",Value(5.0)).asDouble());
-        maxForce=fabs(rf.check("max-force-feedback",Value(20.0)).asDouble());
+        minForce=fabs(rf.check("min-force-feedback",Value(3.0)).asDouble());
+        maxForce=fabs(rf.check("max-force-feedback",Value(15.0)).asDouble());
         bool torso=rf.check("torso",Value("on")).asString()=="on";
 
         Property optGeo("(device hapticdeviceclient)");
