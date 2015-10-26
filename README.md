@@ -84,6 +84,8 @@ Examples of modules connecting to the YARP driver can be found
 - [`Manuelito Scola`](https://github.com/manuelitoscola):
   - `geomagicdriver`
 
+## [Guidelines for contributing](https://github.com/robotology/haptic-devices/blob/master/CONTRIBUTING.md)
+
 ## License
 
 Material included here is Copyright of _iCub Facility - Istituto Italiano di
