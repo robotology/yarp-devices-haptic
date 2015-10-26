@@ -249,7 +249,7 @@ bool GeomagicDriver::getMaxFeedback(Vector &max)
 /*********************************************************************/
 bool GeomagicDriver::setFeedback(const Vector &fdbck)
 {
-    if (fdbck.size()<3)
+    if (fdbck.length()!=3)
         return false;
 
     if (hDeviceData.m_isForce) {
