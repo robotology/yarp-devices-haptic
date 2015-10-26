@@ -73,9 +73,9 @@ driver.view(ihap);
 
 The **IHapticDevice** YARP interface is documented here: [**`http://robotology.github.com/haptic-devices`**](http://robotology.github.com/haptic-devices).
 
-## Client Examples
-Examples of modules connecting to the YARP driver can be found
-[**`here`**](https://github.com/robotology/haptic-devices/tree/master/examples).
+## [Client Examples](https://github.com/robotology/haptic-devices/tree/master/examples)
+
+## [Guidelines for contributing](https://github.com/robotology/haptic-devices/blob/master/CONTRIBUTING.md)
 
 ## Authors
 - [`Ugo Pattacini`](https://github.com/pattacini):
@@ -83,8 +83,6 @@ Examples of modules connecting to the YARP driver can be found
   - `hapticdeviceclient`
 - [`Manuelito Scola`](https://github.com/manuelitoscola):
   - `geomagicdriver`
-
-## [Guidelines for contributing](https://github.com/robotology/haptic-devices/blob/master/CONTRIBUTING.md)
 
 ## License
 
