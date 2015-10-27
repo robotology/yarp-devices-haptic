@@ -38,5 +38,4 @@ The first button is the greyest.
 
 For a video on the iCub teleoperation, click on the image below (you will be redirected to a youtube video):
 
-[![iCub Teleoperation](https://www.youtube.com/watch?v=bl3UtVaKdAE/0.jpg)](https://www.youtube.com/watch?v=bl3UtVaKdAE)
-
+[![iCub Teleoperation](http://img.youtube.com/vi/bl3UtVaKdAE/0.jpg)](https://www.youtube.com/watch?v=bl3UtVaKdAE)
