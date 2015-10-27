@@ -33,3 +33,10 @@ The first button is the greyest.
 - By keeping the first button pressed, you will move/rotate the robot hand with respect to the present pose.
 - By keeping the second button pressed, you will open/close the robot hand.
 - As soon as you release any button, the ongoing teleoperation gets stopped.
+ 
+##### Video
+
+For a video on the iCub teleoperation, click on the image below (you will be redirected to a youtube video):
+
+[![iCub Teleoperation](https://www.youtube.com/watch?v=bl3UtVaKdAE/0.jpg)](https://www.youtube.com/watch?v=bl3UtVaKdAE)
+
