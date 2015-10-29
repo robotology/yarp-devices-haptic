@@ -50,13 +50,13 @@ customized using the `yarp-config` tool.
 ## Connecting to the YARP driver
 A YARP module that wants to connect to an haptic device needs to contain the following instructions:
 
-CMAKE directives:
+##### CMAKE directives
 ```cmake
 find_package(hapticdevice REQUIRED)
 include_directories(${hapticdevice_INCLUDE_DIRS})
 ```
 
-C++ code:
+##### C++ code
 ```cpp
 #include <hapticdevice/IHapticDevice.h>
 
