@@ -16,6 +16,11 @@ include(ICUBcontribHelpers)
 icubcontrib_set_default_prefix()
 
 include_directories(${YARP_INCLUDE_DIRS} ${hapticdevice_INCLUDE_DIRS})
+
+if(MSVC)
+  add_definitions(-D_USE_MATH_DEFINES)
+endif()
+
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
