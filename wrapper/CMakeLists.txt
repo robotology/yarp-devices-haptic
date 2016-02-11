@@ -1,4 +1,4 @@
-# Copyright: (C) 2015 iCub Facility
+# Copyright: (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
 # Authors: Ugo Pattacini <ugo.pattacini@iit.it>
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 

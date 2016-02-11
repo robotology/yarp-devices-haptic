@@ -2,7 +2,7 @@
 # Authors: Ugo Pattacini <ugo.pattacini@iit.it>
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-file(WRITE  ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "# Copyright: (C) 2015 iCub Facility\n")
+file(WRITE  ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "# Copyright: (C) 2015 iCub Facility - Istituto Italiano di Tecnologia\n")
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "# Authors: Ugo Pattacini <ugo.pattacini@iit.it>\n")
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "# CopyPolicy: Released under the terms of the GNU GPL v2.0.\n")
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "\n")
