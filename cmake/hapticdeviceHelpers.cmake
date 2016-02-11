@@ -7,6 +7,6 @@ file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "# Au
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "# CopyPolicy: Released under the terms of the GNU GPL v2.0.\n")
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "\n")
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "if(NOT hapticdevice_FOUND)\n")
-file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "set(hapticdevice_INCLUDE_DIRS \"${CMAKE_INSTALL_PREFIX}/include)\"\n")
+file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "set(hapticdevice_INCLUDE_DIRS \"${CMAKE_INSTALL_PREFIX}/include\"\n")
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "    set(hapticdevice_FOUND TRUE)\n")
 file(APPEND ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake "endif()\n")
