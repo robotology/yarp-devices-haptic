@@ -35,7 +35,7 @@ and see if `hapticdevicewrapper`, `hapticdeviceclient`, `geomagicdriver` are lis
 You can then run the driver in two ways. For example, for the `geomagicdriver` it holds:
 
 1. `yarpdev --device geomagicdriver [option-list]`
-2. `robotInterface --context geomagic --config geomagic.xml`
+2. `yarprobotinterface --context geomagic --config geomagic.xml`
 
 The available options are:
 - `device-id` "_id_": a string with the name of the physical device that has been instantiated.
@@ -43,7 +43,7 @@ The available options are:
 - `period` _period_: an integer that specifies the period in `ms` (`20 ms` by default).
 - `verbosity` _level_: an integer accounting for the enabled verbosity level (`0` by default).
 
-In case the `robotInterface` deployer is chosen, then the options are all contained in the corresponding
+In case the `yarprobotinterface` deployer is chosen, then the options are all contained in the corresponding
 `xml` files that are installed in `$hapticdevice_DIR/share/hapticdevice/context` path and possibly
 customized using the `yarp-config` tool.
 
