@@ -82,6 +82,7 @@ bool HapticDeviceWrapper::open(Searchable &config)
 /*********************************************************************/
 bool HapticDeviceWrapper::close()
 {
+    LockGuard lg(mutex);
     if (isRunning())
     {
         askToStop();
