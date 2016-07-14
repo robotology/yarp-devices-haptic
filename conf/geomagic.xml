@@ -2,6 +2,7 @@
 <robot name="geomagic">
 
     <device name="geomagic_driver" type="geomagicdriver">
+        <param name="device-id"> geo1 </param>
         <param name="verbosity"> 1 </param>
     </device>
 
