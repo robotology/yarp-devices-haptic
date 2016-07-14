@@ -8,6 +8,7 @@
     <device name="hapticdevice_wrapper" type="hapticdevicewrapper">
 
         <param name="name"> geomagic </param>
+        <param name="device-id"> geo1 </param>
         <param name="period"> 10 </param>
         <param name="verbosity"> 1 </param>
 
