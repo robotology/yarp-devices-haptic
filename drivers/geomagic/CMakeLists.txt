@@ -2,7 +2,10 @@
 # Authors: Ugo Pattacini <ugo.pattacini@iit.it>
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-yarp_prepare_device(geomagicdriver TYPE GeomagicDriver INCLUDE geomagicDriver.h WRAPPER hapticdevicewrapper)
+yarp_prepare_plugin(geomagicdriver CATEGORY device
+                                   TYPE GeomagicDriver
+                                   INCLUDE geomagicDriver.h
+                                   EXTRA_CONFIG WRAPPER=hapticdevicewrapper)
 
 if(ENABLE_hapticdevicemod_geomagicdriver)
     if(UNIX)

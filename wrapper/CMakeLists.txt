@@ -2,7 +2,11 @@
 # Authors: Ugo Pattacini <ugo.pattacini@iit.it>
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-yarp_prepare_device(hapticdevicewrapper TYPE HapticDeviceWrapper INCLUDE hapticdeviceWrapper.h WRAPPER hapticdevicewrapper)
+yarp_prepare_plugin(hapticdevicewrapper CATEGORY device
+                                        TYPE HapticDeviceWrapper
+                                        INCLUDE hapticdeviceWrapper.h 
+                                        EXTRA_CONFIG WRAPPER=hapticdevicewrapper)
+
 
 if(ENABLE_hapticdevicemod_hapticdevicewrapper)
     include_directories(${YARP_INCLUDE_DIRS})
