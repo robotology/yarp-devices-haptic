@@ -17,10 +17,9 @@
 #include <yarp/os/Mutex.h>
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/PreciselyTimed.h>
+#include <yarp/dev/IHapticDevice.h>
 #include <yarp/sig/Vector.h>
 #include <yarp/sig/Matrix.h>
-
-#include "IHapticDevice.h"
 
 class HapticDeviceClient;
 
@@ -47,7 +46,7 @@ public:
  */
 class HapticDeviceClient : public yarp::dev::DeviceDriver,
                            public yarp::dev::IPreciselyTimed,
-                           public hapticdevice::IHapticDevice
+                           public yarp::dev::IHapticDevice
 {
 protected:    
     int verbosity;

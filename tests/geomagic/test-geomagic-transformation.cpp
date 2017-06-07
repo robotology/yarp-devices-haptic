@@ -12,14 +12,11 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
-#include <hapticdevice/IHapticDevice.h>
-
 using namespace std;
 using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
-using namespace hapticdevice;
 
 
 /**********************************************************/

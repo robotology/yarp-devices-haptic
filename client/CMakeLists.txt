@@ -14,7 +14,6 @@ if(ENABLE_hapticdevicemod_hapticdeviceclient)
     include_directories(${PROJECT_SOURCE_DIR}/common)
 
     yarp_add_plugin(hapticdeviceclient hapticdeviceClient.h hapticdeviceClient.cpp
-                    ${PROJECT_SOURCE_DIR}/interface/IHapticDevice.h
                     ${PROJECT_SOURCE_DIR}/common/common.h)
     target_link_libraries(hapticdeviceclient ${YARP_LIBRARIES})
     yarp_install(TARGETS hapticdeviceclient
