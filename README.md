@@ -52,13 +52,16 @@ A YARP module that wants to connect to an haptic device needs to contain the fol
 
 ##### C++ code
 ```cpp
+#include <yarp/os/Property.h>
+#include <yarp/dev/PolyDriver.h>
 #include <yarp/dev/IHapticDevice.h>
 
-Property option("(device hapticdeviceclient)");
-option.put("remote","/hapticdevice");   // or whatever wrapper stem-name
-option.put("local","/local-port");  // any local ports stem-name
+yarp::os::Property option;
+option.put("device","hapticdeviceclient");  // device name
+option.put("remote","/hapticdevice");       // or whatever wrapper stem-name
+option.put("local","/local-port");          // any local ports stem-name
 
-PolyDriver driver;
+yarp::dev::PolyDriver driver;
 driver.open(option);
 
 yarp::dev::IHapticDevice *ihap;
