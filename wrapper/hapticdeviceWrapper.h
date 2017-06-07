@@ -21,9 +21,8 @@
 #include <yarp/os/Mutex.h>
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/Wrapper.h>
+#include <yarp/dev/IHapticDevice.h>
 #include <yarp/sig/Vector.h>
-
-#include "IHapticDevice.h"
 
 /**
  * Haptic Device wrapper
@@ -45,7 +44,7 @@ protected:
     yarp::os::Stamp stamp;
 
     yarp::dev::PolyDriver driver;
-    hapticdevice::IHapticDevice *device;
+    yarp::dev::IHapticDevice *device;
 
     yarp::sig::Vector fdbck;
     bool applyFdbck;
@@ -62,7 +61,7 @@ public:
     bool open(yarp::os::Searchable &config);
     bool close();
 
-    void attach(hapticdevice::IHapticDevice *dev);
+    void attach(yarp::dev::IHapticDevice *dev);
     void detach();
 
     bool attachAll(const yarp::dev::PolyDriverList &p);

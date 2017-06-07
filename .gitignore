@@ -29,6 +29,3 @@
 
 #build folder
 build
-
-#temp folder
-cmake/generated

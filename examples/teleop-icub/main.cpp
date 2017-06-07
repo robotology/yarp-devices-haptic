@@ -17,8 +17,6 @@
 #include <yarp/sig/all.h>
 #include <yarp/math/Math.h>
 
-#include <hapticdevice/IHapticDevice.h>
-
 #define DEG2RAD     (M_PI/180.0)
 #define RAD2DEG     (180.0/M_PI)
 
@@ -27,7 +25,6 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
-using namespace hapticdevice;
 
 
 /**********************************************************/

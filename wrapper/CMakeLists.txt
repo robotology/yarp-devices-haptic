@@ -15,7 +15,6 @@ if(ENABLE_hapticdevicemod_hapticdevicewrapper)
     include_directories(${PROJECT_SOURCE_DIR}/common)
 
     yarp_add_plugin(hapticdevicewrapper hapticdeviceWrapper.h hapticdeviceWrapper.cpp
-                    ${PROJECT_SOURCE_DIR}/interface/IHapticDevice.h
                     ${PROJECT_SOURCE_DIR}/common/common.h)
     target_link_libraries(hapticdevicewrapper ${YARP_LIBRARIES})
     yarp_install(TARGETS hapticdevicewrapper

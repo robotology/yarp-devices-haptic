@@ -21,8 +21,6 @@ using namespace yarp::os;
 using namespace yarp::dev;
 using namespace yarp::sig;
 
-using namespace hapticdevice;
-
 
 /*********************************************************************/
 void StatePort::onRead(Bottle &state)

@@ -78,8 +78,7 @@ if(ENABLE_hapticdevicemod_geomagicdriver)
     include_directories(${GEOMAGIC_INCLUDE_DIRS})
     include_directories(${PROJECT_SOURCE_DIR}/interface)
 
-    yarp_add_plugin(geomagicdriver geomagicDriver.h geomagicDriver.cpp
-                    ${PROJECT_SOURCE_DIR}/interface/IHapticDevice.h)
+    yarp_add_plugin(geomagicdriver geomagicDriver.h geomagicDriver.cpp)
  
     target_link_libraries(geomagicdriver ${YARP_LIBRARIES} ${GEOMAGIC_LIBRARIES})
     yarp_install(TARGETS geomagicdriver

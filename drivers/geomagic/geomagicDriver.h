@@ -12,6 +12,7 @@
 
 #include <yarp/os/Searchable.h>
 #include <yarp/dev/DeviceDriver.h>
+#include <yarp/dev/IHapticDevice.h>
 #include <yarp/sig/Vector.h>
 #include <yarp/sig/Matrix.h>
 
@@ -19,8 +20,6 @@
 #include <HL/hl.h>
 #include <HDU/hduVector.h>
 #include <HDU/hduError.h>
-
-#include "IHapticDevice.h"
 
 /**
  * Data retrieved from HDAPI.
@@ -46,7 +45,7 @@ typedef struct
  * Geomagic driver
  */
 class GeomagicDriver : public yarp::dev::DeviceDriver,
-                       public hapticdevice::IHapticDevice
+                       public yarp::dev::IHapticDevice
 {
 protected:
     bool configured;

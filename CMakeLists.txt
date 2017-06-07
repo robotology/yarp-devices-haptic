@@ -7,10 +7,8 @@ project(haptic-devices)
 
 find_package(YARP REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include(YarpPlugin)
-include(hapticdeviceHelpers)
 set(BUILD_SHARED_LIBS TRUE)
 
 yarp_configure_external_installation(hapticdevice WITH_PLUGINS)
@@ -25,8 +23,5 @@ install(TARGETS hapticdevicemod EXPORT hapticdevicemod
 		ARCHIVE DESTINATION lib
 		PUBLIC_HEADER DESTINATION include/hapticdevicemod COMPONENT dev)
 
-yarp_install(FILES interface/IHapticDevice.h DESTINATION include/hapticdevice)
-yarp_install(FILES ${PROJECT_SOURCE_DIR}/cmake/generated/hapticdeviceConfig.cmake
-             DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR})
-
 yarp_install(FILES conf/geomagic.xml DESTINATION ${HAPTICDEVICE_CONTEXTS_INSTALL_DIR}/geomagic)
+

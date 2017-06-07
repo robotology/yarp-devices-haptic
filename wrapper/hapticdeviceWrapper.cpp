@@ -24,8 +24,6 @@ using namespace yarp::dev;
 using namespace yarp::sig;
 using namespace yarp::math;
 
-using namespace hapticdevice;
-
 /*********************************************************************/
 HapticDeviceWrapper::HapticDeviceWrapper() :
                      RateThread(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD),

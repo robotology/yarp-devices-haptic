@@ -50,15 +50,9 @@ customized using the `yarp-config` tool.
 ## Connecting to the YARP driver
 A YARP module that wants to connect to an haptic device needs to contain the following instructions:
 
-##### CMAKE directives
-```cmake
-find_package(hapticdevice REQUIRED)
-include_directories(${hapticdevice_INCLUDE_DIRS})
-```
-
 ##### C++ code
 ```cpp
-#include <hapticdevice/IHapticDevice.h>
+#include <yarp/dev/IHapticDevice.h>
 
 Property option("(device hapticdeviceclient)");
 option.put("remote","/hapticdevice");   // or whatever wrapper stem-name
@@ -67,11 +61,11 @@ option.put("local","/local-port");  // any local ports stem-name
 PolyDriver driver;
 driver.open(option);
 
-hapticdevice::IHapticDevice *ihap;
+yarp::dev::IHapticDevice *ihap;
 driver.view(ihap);
 ```
 
-The **IHapticDevice** YARP interface is documented here: [**`http://robotology.github.com/haptic-devices`**](http://robotology.github.com/haptic-devices).
+Read [YARP documentation](http://www.yarp.it/index.html) to find out more about **IHapticDevice** interface.
 
 ## [Client Examples](/examples)
 
@@ -89,3 +83,4 @@ The **IHapticDevice** YARP interface is documented here: [**`http://robotology.g
 Material included here is Copyright of _iCub Facility - Istituto Italiano di
 Tecnologia_ and is released under the terms of the GPL v2.0 or later.
 See the file LICENSE for details.
+
