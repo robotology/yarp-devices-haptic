@@ -68,7 +68,7 @@ yarp::dev::IHapticDevice *ihap;
 driver.view(ihap);
 ```
 
-Read [YARP documentation](http://www.yarp.it/index.html) to find out more about **IHapticDevice** interface.
+Read [YARP documentation](http://www.yarp.it/index.html) to find out more about [**IHapticDevice**](http://www.yarp.it/classyarp_1_1dev_1_1IHapticDevice.html) interface.
 
 ## [Client Examples](/examples)
 
