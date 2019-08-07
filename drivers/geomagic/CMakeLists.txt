@@ -73,7 +73,6 @@ if(ENABLE_hapticdevicemod_geomagicdriver)
         mark_as_advanced(GEOMAGIC_LIB_HLU_D)
     endif()
     
-    include_directories(${YARP_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${GEOMAGIC_INCLUDE_DIRS})
     include_directories(${PROJECT_SOURCE_DIR}/interface)

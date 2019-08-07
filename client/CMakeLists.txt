@@ -8,7 +8,6 @@ yarp_prepare_plugin(hapticdeviceclient CATEGORY device
                                        EXTRA_CONFIG WRAPPER=hapticdeviceclient)
 
 if(ENABLE_hapticdevicemod_hapticdeviceclient)
-    include_directories(${YARP_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${PROJECT_SOURCE_DIR}/interface)
     include_directories(${PROJECT_SOURCE_DIR}/common)
