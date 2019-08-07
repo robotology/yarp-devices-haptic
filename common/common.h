@@ -14,15 +14,15 @@
 
 namespace hapticdevice {
     enum {
-        ack                = VOCAB3('a','c','k'),
-        nack               = VOCAB4('n','a','c','k'),
-        get_transformation = VOCAB4('g','t','r','a'),
-        set_transformation = VOCAB4('s','t','r','a'),
-        stop_feedback      = VOCAB4('s','t','o','p'),
-        is_cartesian       = VOCAB3('i','s','f'),
-        set_cartesian      = VOCAB4('s','c','a','r'),
-        set_joint          = VOCAB4('s','j','n','t'),
-        get_max            = VOCAB4('g','m','a','x')
+        ack                = yarp::os::createVocab('a','c','k'),
+        nack               = yarp::os::createVocab('n','a','c','k'),
+        get_transformation = yarp::os::createVocab('g','t','r','a'),
+        set_transformation = yarp::os::createVocab('s','t','r','a'),
+        stop_feedback      = yarp::os::createVocab('s','t','o','p'),
+        is_cartesian       = yarp::os::createVocab('i','s','f'),
+        set_cartesian      = yarp::os::createVocab('s','c','a','r'),
+        set_joint          = yarp::os::createVocab('s','j','n','t'),
+        get_max            = yarp::os::createVocab('g','m','a','x')
     };
 }
 
