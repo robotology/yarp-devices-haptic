@@ -5,9 +5,10 @@
 yarp_prepare_plugin(geomagicdriver CATEGORY device
                                    TYPE GeomagicDriver
                                    INCLUDE geomagicDriver.h
+                                   DEFAULT OFF
                                    EXTRA_CONFIG WRAPPER=hapticdevicewrapper)
 
-if(ENABLE_hapticdevicemod_geomagicdriver)
+if(ENABLE_geomagicdriver)
     if(UNIX)
         set(GEOMAGIC_INCLUDE_DIRS)
         find_library(GEOMAGIC_LIB_HD  HD)
@@ -73,7 +74,6 @@ if(ENABLE_hapticdevicemod_geomagicdriver)
         mark_as_advanced(GEOMAGIC_LIB_HLU_D)
     endif()
     
-    include_directories(${YARP_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${GEOMAGIC_INCLUDE_DIRS})
     include_directories(${PROJECT_SOURCE_DIR}/interface)
@@ -83,7 +83,6 @@ if(ENABLE_hapticdevicemod_geomagicdriver)
     target_link_libraries(geomagicdriver ${YARP_LIBRARIES} ${GEOMAGIC_LIBRARIES})
     yarp_install(TARGETS geomagicdriver
                  COMPONENT Runtime
-                 LIBRARY DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR})
-
-    yarp_install(FILES geomagicdriver.ini DESTINATION ${HAPTICDEVICE_PLUGIN_MANIFESTS_INSTALL_DIR})
+                 LIBRARY DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 YARP_INI DESTINATION ${HAPTICDEVICE_PLUGIN_MANIFESTS_INSTALL_DIR})
 endif()

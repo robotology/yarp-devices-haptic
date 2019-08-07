@@ -18,8 +18,8 @@ prior to pairing the device. This will make the driver work outside US.
 - [icub-contrib-common](https://github.com/robotology/icub-contrib-common) (only for examples and tests)
 
 ## Compiling and Installing the YARP plugins
-1. Set up the building project by means of **cmake**. Remember to tick on the drivers:
-`hapticdevicewrapper`, `hapticdeviceclient` and the physical drivers you need, e.g. `geomagicdriver`.
+1. Set up the building project by means of **cmake**. If you need to compile some physical drivers you need, remember
+to enable the relative CMake variable, e.g. `ENABLE_geomagicdriver`.
 2. Compile and install the project.
 3. Set up the environment variable **`hapticdevice_DIR`** pointing where the project gets installed
 (should be the same path used for `CMAKE_INSTALL_PREFIX`).
