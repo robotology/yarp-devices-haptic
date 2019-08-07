@@ -18,8 +18,7 @@ if(ENABLE_hapticdevicemod_hapticdevicewrapper)
     target_link_libraries(hapticdevicewrapper ${YARP_LIBRARIES})
     yarp_install(TARGETS hapticdevicewrapper
                  COMPONENT Runtime
-                 LIBRARY DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR})
-
-    yarp_install(FILES hapticdevicewrapper.ini DESTINATION ${HAPTICDEVICE_PLUGIN_MANIFESTS_INSTALL_DIR})
+                 LIBRARY DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 YARP_INI DESTINATION ${HAPTICDEVICE_PLUGIN_MANIFESTS_INSTALL_DIR})
 endif()
 

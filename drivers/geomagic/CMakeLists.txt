@@ -82,7 +82,6 @@ if(ENABLE_hapticdevicemod_geomagicdriver)
     target_link_libraries(geomagicdriver ${YARP_LIBRARIES} ${GEOMAGIC_LIBRARIES})
     yarp_install(TARGETS geomagicdriver
                  COMPONENT Runtime
-                 LIBRARY DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR})
-
-    yarp_install(FILES geomagicdriver.ini DESTINATION ${HAPTICDEVICE_PLUGIN_MANIFESTS_INSTALL_DIR})
+                 LIBRARY DESTINATION ${HAPTICDEVICE_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 YARP_INI DESTINATION ${HAPTICDEVICE_PLUGIN_MANIFESTS_INSTALL_DIR})
 endif()
