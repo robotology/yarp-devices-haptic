@@ -5,6 +5,7 @@
 yarp_prepare_plugin(geomagicdriver CATEGORY device
                                    TYPE GeomagicDriver
                                    INCLUDE geomagicDriver.h
+                                   DEFAULT OFF
                                    EXTRA_CONFIG WRAPPER=hapticdevicewrapper)
 
 if(ENABLE_geomagicdriver)

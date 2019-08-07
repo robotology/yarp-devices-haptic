@@ -5,6 +5,7 @@
 yarp_prepare_plugin(hapticdevicewrapper CATEGORY device
                                         TYPE HapticDeviceWrapper
                                         INCLUDE hapticdeviceWrapper.h 
+                                        DEFAULT ON
                                         EXTRA_CONFIG WRAPPER=hapticdevicewrapper)
 
 
