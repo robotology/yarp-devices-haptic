@@ -5,10 +5,8 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(haptic-devices)
 
-find_package(YARP REQUIRED)
-list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+find_package(YARP 3.2 REQUIRED)
 
-include(YarpPlugin)
 set(BUILD_SHARED_LIBS TRUE)
 
 yarp_configure_external_installation(hapticdevice WITH_PLUGINS)
