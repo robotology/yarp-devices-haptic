@@ -19,9 +19,9 @@ yarp_begin_plugin_library(hapticdevicemod)
 yarp_end_plugin_library(hapticdevicemod)
 
 install(TARGETS hapticdevicemod EXPORT hapticdevicemod
-		LIBRARY DESTINATION lib COMPONENT shlib
-		ARCHIVE DESTINATION lib
-		PUBLIC_HEADER DESTINATION include/hapticdevicemod COMPONENT dev)
+        LIBRARY DESTINATION lib COMPONENT shlib
+        ARCHIVE DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/hapticdevicemod COMPONENT dev)
 
 yarp_install(FILES conf/geomagic.xml DESTINATION ${HAPTICDEVICE_CONTEXTS_INSTALL_DIR}/geomagic)
 
