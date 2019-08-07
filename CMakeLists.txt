@@ -10,16 +10,10 @@ find_package(YARP 3.2 REQUIRED)
 set(BUILD_SHARED_LIBS TRUE)
 
 yarp_configure_external_installation(hapticdevice WITH_PLUGINS)
-yarp_begin_plugin_library(hapticdevicemod)
-    add_subdirectory(drivers)
-    add_subdirectory(wrapper)
-    add_subdirectory(client)
-yarp_end_plugin_library(hapticdevicemod)
 
-install(TARGETS hapticdevicemod EXPORT hapticdevicemod
-        LIBRARY DESTINATION lib COMPONENT shlib
-        ARCHIVE DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/hapticdevicemod COMPONENT dev)
+add_subdirectory(drivers)
+add_subdirectory(wrapper)
+add_subdirectory(client)
 
 yarp_install(FILES conf/geomagic.xml DESTINATION ${HAPTICDEVICE_CONTEXTS_INSTALL_DIR}/geomagic)
 
