@@ -4,8 +4,8 @@ Generic YARP Driver for Haptic Devices
 ## Installation of Physical Drivers
 
 ##### Geomagic Touch Drivers and API
-Login at http://developer.geomagic.com, download the drivers and the SDK
-for your platform and follow the enclosed instructions.
+Download the Geomagic Touch drivers and the SDK
+for your platform following the links at https://3dssupport.microsoftcrmportals.com/knowledgebase/article/KA-01405/en-us and follow the enclosed instructions.
 
 In _Windows_, the environment variable **`OH_SDK_BASE`** should be set by the installer
 pointing to the location where the driver and the SDK are installed.
