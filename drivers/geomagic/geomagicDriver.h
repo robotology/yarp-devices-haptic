@@ -21,6 +21,10 @@
 #include <HDU/hduVector.h>
 #include <HDU/hduError.h>
 
+#include <atomic>
+#include <mutex>
+#include <thread>
+
 /**
  * Data retrieved from HDAPI.
  */
@@ -53,11 +57,23 @@ protected:
     std::string name;
     yarp::sig::Matrix T;
 
+    // True if the close method has been called at least once
+    std::atomic<bool> isDeviceClosing{false};
+
+    // Thread for blocking data exchange with the Geomagic device
+    std::thread dataExchangeThread;
+
     // Geomagic Touch Device HD library variables
     HHD hHD;
     HDSchedulerHandle hUpdateHandle;
     DeviceData hDeviceData;
+    std::mutex hDeviceDataSensorMutex;
+    std::mutex hDeviceDataForceMutex;
     DeviceData innerDeviceData;
+    // False if there was an error in reading from Geomagic
+    std::atomic<bool> readSuccessful{false};
+    // False if there was an error in writing to the Geomagic
+    std::atomic<bool> writeSuccessful{false};
 
     // Geomagic features: num motors and force limits
     int numMotors;
@@ -70,10 +86,12 @@ protected:
     // Update motor force data
     static HDCallbackCode HDCALLBACK updateMotorForceDataCallback(void *);
 
-    bool getData();
-    bool setData();
     HDdouble sat(HDdouble value,HDdouble max);
 
+    // Functions  for blocking data exchange with the Geomagic
+    void dataExchangeLoop();
+    void getData();
+    void setData();
 public:
     GeomagicDriver();
 

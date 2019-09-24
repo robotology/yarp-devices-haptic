@@ -7,6 +7,7 @@ The format of this document is based on [Keep a Changelog](https://keepachangelo
 The minimum version of YARP required to use `haptic-devices` is now 3.2 .
 
 ### Changed
+- In `geomagicdriver`, the `get` and `set` methods are not blocking anymore (see https://github.com/robotology/haptic-devices/issues/10 and https://github.com/robotology/haptic-devices/pull/11).
 - Compilation of `hapticdevicewrapper` and `hapticdeviceclient` is now ON by default.
 - CMake options for compilation of devices changed from `ENABLE_hapticdevicemod_<devicename>` to `ENABLE_<devicename>`.
 
