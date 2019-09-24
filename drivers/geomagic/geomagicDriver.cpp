@@ -12,6 +12,9 @@
 
 #include "geomagicDriver.h"
 
+#include <functional>
+#include <mutex>
+
 #define GEOMAGIC_DRIVER_DEFAULT_NAME    "Default Device"
 #define MAX_JOINT_TORQUE_0              350.0
 #define MAX_JOINT_TORQUE_1              350.0
@@ -121,6 +124,13 @@ bool GeomagicDriver::open(Searchable &config)
         }
 
         configured=true;
+        isDeviceClosing=false;
+        readSuccessful=false;
+        writeSuccessful=false;
+
+        // start thread
+        dataExchangeThread = std::thread(std::bind(&GeomagicDriver::dataExchangeLoop, this));
+
         return true;
     }
     else
@@ -137,6 +147,12 @@ bool GeomagicDriver::close()
     if (configured)
     {
         configured=false;
+
+        isDeviceClosing = true;
+        if (dataExchangeThread.joinable())
+        {
+            dataExchangeThread.join();
+        }
 
         hdStopScheduler();
         hdUnschedule(hUpdateHandle);
@@ -157,10 +173,11 @@ bool GeomagicDriver::close()
 /*********************************************************************/
 bool GeomagicDriver::getPosition(Vector &pos)
 {
-    if (!getData())
+    if (!readSuccessful)
         return false;
 
     pos.resize(4);
+    std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
     pos[0]=0.001*hDeviceData.m_devicePosition[0];
     pos[1]=0.001*hDeviceData.m_devicePosition[1];
     pos[2]=0.001*hDeviceData.m_devicePosition[2];
@@ -176,10 +193,11 @@ bool GeomagicDriver::getPosition(Vector &pos)
 /*********************************************************************/
 bool GeomagicDriver::getOrientation(Vector &rpy)
 {
-    if (!getData())
+    if (!readSuccessful)
         return false;
 
     rpy.resize(3);
+    std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
     rpy[0]=hDeviceData.m_gimbalAngles[0];
     rpy[1]=hDeviceData.m_gimbalAngles[1];
     rpy[2]=hDeviceData.m_gimbalAngles[2];
@@ -191,10 +209,11 @@ bool GeomagicDriver::getOrientation(Vector &rpy)
 /*********************************************************************/
 bool GeomagicDriver::getButtons(Vector &buttons)
 {
-    if (!getData())
+    if (!readSuccessful)
         return false;
 
     buttons.resize(2);
+    std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
     buttons[0]=hDeviceData.m_button1State;
     buttons[1]=hDeviceData.m_button2State;
 
@@ -205,6 +224,7 @@ bool GeomagicDriver::getButtons(Vector &buttons)
 /*********************************************************************/
 bool GeomagicDriver::isCartesianForceModeEnabled(bool &ret)
 {
+    std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
     ret=hDeviceData.m_isForce;
     return true;
 }
@@ -215,6 +235,7 @@ bool GeomagicDriver::setCartesianForceMode()
 {
     if (verbosity>0)
         yInfo("*** Geomagic Driver: Cartesian Force mode enabled");
+    std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
     hDeviceData.m_isForce=true;
     return true;
 }
@@ -225,6 +246,7 @@ bool GeomagicDriver::setJointTorqueMode()
 {
     if (verbosity>0)
         yInfo("*** Geomagic Driver: Joint Torque mode enabled");
+    std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
     hDeviceData.m_isForce=false;
     return true;
 }
@@ -234,6 +256,7 @@ bool GeomagicDriver::setJointTorqueMode()
 bool GeomagicDriver::getMaxFeedback(Vector &max)
 {
     max.resize(3);
+    std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
     if (hDeviceData.m_isForce) {
         max=maxForceMagnitude;
     }
@@ -252,6 +275,7 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
     if (fdbck.length()!=3)
         return false;
 
+    std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
     if (hDeviceData.m_isForce) {
         Vector fdbck_=fdbck;
         fdbck_.push_back(1.0);
@@ -267,18 +291,19 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
         hDeviceData.m_forceValues[2]=sat(fdbck[2],MAX_JOINT_TORQUE_2);
     }
 
-    return setData();
+    return writeSuccessful;
 }
 
 
 /*********************************************************************/
 bool GeomagicDriver::stopFeedback()
 {
+    std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
     hDeviceData.m_forceValues[0]=0.0;
     hDeviceData.m_forceValues[1]=0.0;
     hDeviceData.m_forceValues[2]=0.0;
     
-    return setData();
+    return writeSuccessful;
 }
 
 
@@ -310,7 +335,18 @@ bool GeomagicDriver::getTransformation(Matrix &T)
 
 
 /*********************************************************************/
-bool GeomagicDriver::getData()
+void GeomagicDriver::dataExchangeLoop()
+{
+    while (!isDeviceClosing)
+    {
+        getData();
+        setData();
+    }
+}
+
+
+/*********************************************************************/
+void GeomagicDriver::getData()
 {
     HDErrorInfo error;
 
@@ -322,15 +358,17 @@ bool GeomagicDriver::getData()
     if (HD_DEVICE_ERROR(error = hdGetError())) {
         yError("*** Geomagic Driver: failed to copy device data (%s)",
                hdGetErrorString(error.errorCode));
-        return false;
+        readSuccessful = false;
+    } else {
+        readSuccessful = true;
     }
 
-    return true;
+    return;
 }
 
 
 /*********************************************************************/
-bool GeomagicDriver::setData()
+void GeomagicDriver::setData()
 {
     HDErrorInfo error;
 
@@ -342,10 +380,12 @@ bool GeomagicDriver::setData()
     if (HD_DEVICE_ERROR(error = hdGetError())) {
         yError("*** Geomagic Driver: failed to update force device data (%s)",
                hdGetErrorString(error.errorCode));
-        return false;
+        writeSuccessful = false;
+    } else {
+        writeSuccessful = true;
     }
 
-    return true;
+    return;
 }
 
 
@@ -413,6 +453,7 @@ HDCallbackCode HDCALLBACK
 GeomagicDriver::copyDeviceDataCallback(void *pUserData)
 {
     GeomagicDriver *pThis = static_cast<GeomagicDriver *>(pUserData);
+    std::lock_guard<std::mutex> lock(pThis->hDeviceDataSensorMutex);
     memcpy(&pThis->hDeviceData, &pThis->innerDeviceData, sizeof(DeviceData));
     return HD_CALLBACK_DONE;
 }
@@ -423,6 +464,7 @@ HDCallbackCode HDCALLBACK
 GeomagicDriver::updateMotorForceDataCallback(void *pUserData)
 {
     GeomagicDriver *pThis = static_cast<GeomagicDriver *>(pUserData);
+    std::lock_guard<std::mutex> lock(pThis->hDeviceDataForceMutex);
     pThis->innerDeviceData.m_isForce=pThis->hDeviceData.m_isForce;
     pThis->innerDeviceData.m_forceValues[0]=pThis->hDeviceData.m_forceValues[0];
     pThis->innerDeviceData.m_forceValues[1]=pThis->hDeviceData.m_forceValues[1];
