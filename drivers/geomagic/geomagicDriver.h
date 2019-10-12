@@ -43,6 +43,14 @@ typedef struct
 
 } DeviceData;
 
+/**
+ * Data sent to the HDAPI.
+ */
+typedef struct {
+    bool m_isForce;                /* Force or Torque Mode */
+    hduVector3Dd m_forceValues;
+} SentToDeviceData;
+
 
 /**
  * Geomagic driver
@@ -65,9 +73,10 @@ protected:
     // Geomagic Touch Device HD library variables
     HHD hHD;
     HDSchedulerHandle hUpdateHandle;
-    DeviceData hDeviceData;
+    DeviceData hDeviceDataSensor;
     std::mutex hDeviceDataSensorMutex;
     std::mutex hDeviceDataForceMutex;
+    SentToDeviceData hDeviceDataForce;
     DeviceData innerDeviceData;
     // False if there was an error in reading from Geomagic
     std::atomic<bool> readSuccessful{false};
