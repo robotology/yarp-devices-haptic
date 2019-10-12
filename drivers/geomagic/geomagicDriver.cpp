@@ -1,3 +1,4 @@
+
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
 /*
@@ -14,6 +15,8 @@
 
 #include <functional>
 #include <mutex>
+
+#include <iostream>
 
 #define GEOMAGIC_DRIVER_DEFAULT_NAME    "Default Device"
 #define MAX_JOINT_TORQUE_0              350.0
@@ -108,7 +111,7 @@ bool GeomagicDriver::open(Searchable &config)
         }
 
         hdEnable(HD_FORCE_OUTPUT);
-        hDeviceData.m_isForce = true;
+        hDeviceDataForce.m_isForce = true;
         if (verbosity>0)
             yInfo("*** Geomagic Driver: Cartesian Force mode enabled");
 
@@ -178,9 +181,9 @@ bool GeomagicDriver::getPosition(Vector &pos)
 
     pos.resize(4);
     std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    pos[0]=0.001*hDeviceData.m_devicePosition[0];
-    pos[1]=0.001*hDeviceData.m_devicePosition[1];
-    pos[2]=0.001*hDeviceData.m_devicePosition[2];
+    pos[0]=0.001*hDeviceDataSensor.m_devicePosition[0];
+    pos[1]=0.001*hDeviceDataSensor.m_devicePosition[1];
+    pos[2]=0.001*hDeviceDataSensor.m_devicePosition[2];
     pos[3]=1.0;
 
     pos=T*pos;
@@ -198,9 +201,9 @@ bool GeomagicDriver::getOrientation(Vector &rpy)
 
     rpy.resize(3);
     std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    rpy[0]=hDeviceData.m_gimbalAngles[0];
-    rpy[1]=hDeviceData.m_gimbalAngles[1];
-    rpy[2]=hDeviceData.m_gimbalAngles[2];
+    rpy[0]=hDeviceDataSensor.m_gimbalAngles[0];
+    rpy[1]=hDeviceDataSensor.m_gimbalAngles[1];
+    rpy[2]=hDeviceDataSensor.m_gimbalAngles[2];
 
     return true;
 }
@@ -214,8 +217,8 @@ bool GeomagicDriver::getButtons(Vector &buttons)
 
     buttons.resize(2);
     std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    buttons[0]=hDeviceData.m_button1State;
-    buttons[1]=hDeviceData.m_button2State;
+    buttons[0]=hDeviceDataSensor.m_button1State;
+    buttons[1]=hDeviceDataSensor.m_button2State;
 
     return true;
 }
@@ -225,7 +228,7 @@ bool GeomagicDriver::getButtons(Vector &buttons)
 bool GeomagicDriver::isCartesianForceModeEnabled(bool &ret)
 {
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    ret=hDeviceData.m_isForce;
+    ret=hDeviceDataForce.m_isForce;
     return true;
 }
 
@@ -236,7 +239,7 @@ bool GeomagicDriver::setCartesianForceMode()
     if (verbosity>0)
         yInfo("*** Geomagic Driver: Cartesian Force mode enabled");
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    hDeviceData.m_isForce=true;
+    hDeviceDataForce.m_isForce=true;
     return true;
 }
 
@@ -247,7 +250,7 @@ bool GeomagicDriver::setJointTorqueMode()
     if (verbosity>0)
         yInfo("*** Geomagic Driver: Joint Torque mode enabled");
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    hDeviceData.m_isForce=false;
+    hDeviceDataForce.m_isForce=false;
     return true;
 }
 
@@ -257,7 +260,7 @@ bool GeomagicDriver::getMaxFeedback(Vector &max)
 {
     max.resize(3);
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    if (hDeviceData.m_isForce) {
+    if (hDeviceDataForce.m_isForce) {
         max=maxForceMagnitude;
     }
     else {
@@ -276,19 +279,19 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
         return false;
 
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    if (hDeviceData.m_isForce) {
+    if (hDeviceDataForce.m_isForce) {
         Vector fdbck_=fdbck;
         fdbck_.push_back(1.0);
         fdbck_=SE3inv(T)*fdbck_;
 
-        hDeviceData.m_forceValues[0]=sat(fdbck_[0],maxForceMagnitude);
-        hDeviceData.m_forceValues[1]=sat(fdbck_[1],maxForceMagnitude);
-        hDeviceData.m_forceValues[2]=sat(fdbck_[2],maxForceMagnitude);
+        hDeviceDataForce.m_forceValues[0]=sat(fdbck_[0],maxForceMagnitude);
+        hDeviceDataForce.m_forceValues[1]=sat(fdbck_[1],maxForceMagnitude);
+        hDeviceDataForce.m_forceValues[2]=sat(fdbck_[2],maxForceMagnitude);
     }
     else {
-        hDeviceData.m_forceValues[0]=sat(fdbck[0],MAX_JOINT_TORQUE_0);
-        hDeviceData.m_forceValues[1]=sat(fdbck[1],MAX_JOINT_TORQUE_1);
-        hDeviceData.m_forceValues[2]=sat(fdbck[2],MAX_JOINT_TORQUE_2);
+        hDeviceDataForce.m_forceValues[0]=sat(fdbck[0],MAX_JOINT_TORQUE_0);
+        hDeviceDataForce.m_forceValues[1]=sat(fdbck[1],MAX_JOINT_TORQUE_1);
+        hDeviceDataForce.m_forceValues[2]=sat(fdbck[2],MAX_JOINT_TORQUE_2);
     }
 
     return writeSuccessful;
@@ -299,9 +302,9 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
 bool GeomagicDriver::stopFeedback()
 {
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    hDeviceData.m_forceValues[0]=0.0;
-    hDeviceData.m_forceValues[1]=0.0;
-    hDeviceData.m_forceValues[2]=0.0;
+    hDeviceDataForce.m_forceValues[0]=0.0;
+    hDeviceDataForce.m_forceValues[1]=0.0;
+    hDeviceDataForce.m_forceValues[2]=0.0;
     
     return writeSuccessful;
 }
@@ -454,7 +457,7 @@ GeomagicDriver::copyDeviceDataCallback(void *pUserData)
 {
     GeomagicDriver *pThis = static_cast<GeomagicDriver *>(pUserData);
     std::lock_guard<std::mutex> lock(pThis->hDeviceDataSensorMutex);
-    memcpy(&pThis->hDeviceData, &pThis->innerDeviceData, sizeof(DeviceData));
+    memcpy(&pThis->hDeviceDataSensor, &pThis->innerDeviceData, sizeof(DeviceData));
     return HD_CALLBACK_DONE;
 }
 
@@ -465,10 +468,10 @@ GeomagicDriver::updateMotorForceDataCallback(void *pUserData)
 {
     GeomagicDriver *pThis = static_cast<GeomagicDriver *>(pUserData);
     std::lock_guard<std::mutex> lock(pThis->hDeviceDataForceMutex);
-    pThis->innerDeviceData.m_isForce=pThis->hDeviceData.m_isForce;
-    pThis->innerDeviceData.m_forceValues[0]=pThis->hDeviceData.m_forceValues[0];
-    pThis->innerDeviceData.m_forceValues[1]=pThis->hDeviceData.m_forceValues[1];
-    pThis->innerDeviceData.m_forceValues[2]=pThis->hDeviceData.m_forceValues[2];
+    pThis->innerDeviceData.m_isForce=pThis->hDeviceDataForce.m_isForce;
+    pThis->innerDeviceData.m_forceValues[0]=pThis->hDeviceDataForce.m_forceValues[0];
+    pThis->innerDeviceData.m_forceValues[1]=pThis->hDeviceDataForce.m_forceValues[1];
+    pThis->innerDeviceData.m_forceValues[2]=pThis->hDeviceDataForce.m_forceValues[2];
     return HD_CALLBACK_DONE;
 }
 
