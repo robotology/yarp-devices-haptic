@@ -8,10 +8,10 @@
  */
 
 #include <string>
+#include <mutex>
 
 #include <yarp/os/Log.h>
 #include <yarp/os/Network.h>
-#include <yarp/os/LockGuard.h>
 
 #include "hapticdeviceClient.h"
 #include "common.h"
@@ -27,7 +27,7 @@ void StatePort::onRead(Bottle &state)
 {
     if (client!=NULL)
     {
-        LockGuard lg(client->mutex);
+        std::lock_guard lg(client->mutex);
         state.write(client->state);
         getEnvelope(client->stamp);
     }
@@ -57,7 +57,7 @@ bool HapticDeviceClient::open(Searchable &config)
 
     string remote=config.find("remote").asString().c_str();
     string local=config.find("local").asString().c_str();
-    verbosity=config.check("verbosity",Value(0)).asInt();
+    verbosity=config.check("verbosity",Value(0)).asInt32();
 
     statePort.open((local+"/state:i").c_str());
     feedbackPort.open((local+"/feedback:o").c_str());
@@ -103,7 +103,7 @@ bool HapticDeviceClient::close()
 /*********************************************************************/
 bool HapticDeviceClient::getPosition(Vector &pos)
 {
-    LockGuard lg(mutex);
+    std::lock_guard lg(mutex);
     pos=state.subVector(0,2);
     return true;
 }
@@ -112,7 +112,7 @@ bool HapticDeviceClient::getPosition(Vector &pos)
 /*********************************************************************/
 bool HapticDeviceClient::getOrientation(Vector &rpy)
 {
-    LockGuard lg(mutex);
+    std::lock_guard lg(mutex);
     rpy=state.subVector(3,5);
     return true;
 }
@@ -121,7 +121,7 @@ bool HapticDeviceClient::getOrientation(Vector &rpy)
 /*********************************************************************/
 bool HapticDeviceClient::getButtons(Vector &buttons)
 {
-    LockGuard lg(mutex);
+    std::lock_guard lg(mutex);
     buttons=state.subVector(6,7);
     return true;
 }
@@ -131,16 +131,16 @@ bool HapticDeviceClient::getButtons(Vector &buttons)
 bool HapticDeviceClient::isCartesianForceModeEnabled(bool &ret)
 {
     Bottle cmd,rep;
-    cmd.addVocab(hapticdevice::is_cartesian);
+    cmd.addVocab32(hapticdevice::is_cartesian);
     if (!rpcPort.write(cmd,rep))
     {
         yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    if (rep.get(0).asVocab()==hapticdevice::ack)
+    if (rep.get(0).asVocab32()==hapticdevice::ack)
     {
-        ret=(rep.get(1).asInt()!=0);
+        ret=(rep.get(1).asInt32()!=0);
         return true;
     }
     else
@@ -152,14 +152,14 @@ bool HapticDeviceClient::isCartesianForceModeEnabled(bool &ret)
 bool HapticDeviceClient::setCartesianForceMode()
 {
     Bottle cmd,rep;
-    cmd.addVocab(hapticdevice::set_cartesian);
+    cmd.addVocab32(hapticdevice::set_cartesian);
     if (!rpcPort.write(cmd,rep))
     {
         yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    return (rep.get(0).asVocab()==hapticdevice::ack);
+    return (rep.get(0).asVocab32()==hapticdevice::ack);
 }
 
 
@@ -167,14 +167,14 @@ bool HapticDeviceClient::setCartesianForceMode()
 bool HapticDeviceClient::setJointTorqueMode()
 {
     Bottle cmd,rep;
-    cmd.addVocab(hapticdevice::set_joint);
+    cmd.addVocab32(hapticdevice::set_joint);
     if (!rpcPort.write(cmd,rep))
     {
         yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    return (rep.get(0).asVocab()==hapticdevice::ack);
+    return (rep.get(0).asVocab32()==hapticdevice::ack);
 }
 
 
@@ -182,25 +182,25 @@ bool HapticDeviceClient::setJointTorqueMode()
 bool HapticDeviceClient::getMaxFeedback(Vector &max)
 {
     Bottle cmd,rep;
-    cmd.addVocab(hapticdevice::get_max);
+    cmd.addVocab32(hapticdevice::get_max);
     if (!rpcPort.write(cmd,rep))
     {
         yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    if (rep.get(0).asVocab()==hapticdevice::ack)
+    if (rep.get(0).asVocab32()==hapticdevice::ack)
     {
         if (Bottle *payload=rep.get(1).asList())
         {
             max.resize(payload->size());
             for (size_t i=0; i<max.length(); i++)
-                max[i]=payload->get(i).asDouble();
-            
+                max[i]=payload->get(i).asFloat64();
+
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -210,7 +210,7 @@ bool HapticDeviceClient::setFeedback(const Vector &fdbck)
 {
     if (fdbck.length()==3)
     {
-        feedbackPort.prepare().read(const_cast<Vector&>(fdbck)); 
+        feedbackPort.prepare().read(const_cast<Vector&>(fdbck));
         feedbackPort.writeStrict();
         return true;
     }
@@ -223,14 +223,14 @@ bool HapticDeviceClient::setFeedback(const Vector &fdbck)
 bool HapticDeviceClient::stopFeedback()
 {
     Bottle cmd,rep;
-    cmd.addVocab(hapticdevice::stop_feedback);
+    cmd.addVocab32(hapticdevice::stop_feedback);
     if (!rpcPort.write(cmd,rep))
     {
         yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    return (rep.get(0).asVocab()==hapticdevice::ack);
+    return (rep.get(0).asVocab32()==hapticdevice::ack);
 }
 
 
@@ -238,31 +238,31 @@ bool HapticDeviceClient::stopFeedback()
 bool HapticDeviceClient::getTransformation(Matrix &T)
 {
     Bottle cmd,rep;
-    cmd.addVocab(hapticdevice::get_transformation);
+    cmd.addVocab32(hapticdevice::get_transformation);
     if (!rpcPort.write(cmd,rep))
     {
         yError("*** Haptic Device Client: unable to get reply from Haptic Device Wrapper!");
         return false;
     }
 
-    if (rep.get(0).asVocab()==hapticdevice::ack)
+    if (rep.get(0).asVocab32()==hapticdevice::ack)
     {
         if (Bottle *payload=rep.get(1).asList())
         {
-            T.resize(payload->get(0).asInt(),
-                     payload->get(1).asInt());
-            
+            T.resize(payload->get(0).asInt32(),
+                     payload->get(1).asInt32());
+
             if (Bottle *vals=payload->get(2).asList())
             {
                 for (int r=0; r<T.rows(); r++)
                     for (int c=0; c<T.cols(); c++)
-                        T(r,c)=vals->get(T.rows()*r+c).asDouble();
-            
+                        T(r,c)=vals->get(T.rows()*r+c).asFloat64();
+
                 return true;
             }
         }
     }
-    
+
     return false;
 }
 
@@ -271,7 +271,7 @@ bool HapticDeviceClient::getTransformation(Matrix &T)
 bool HapticDeviceClient::setTransformation(const Matrix &T)
 {
     Bottle cmd,rep;
-    cmd.addVocab(hapticdevice::set_transformation);
+    cmd.addVocab32(hapticdevice::set_transformation);
     cmd.addList().read(const_cast<Matrix&>(T));
     if (!rpcPort.write(cmd,rep))
     {
@@ -279,14 +279,13 @@ bool HapticDeviceClient::setTransformation(const Matrix &T)
         return false;
     }
 
-    return (rep.get(0).asVocab()==hapticdevice::ack);
+    return (rep.get(0).asVocab32()==hapticdevice::ack);
 }
 
 
 /*********************************************************************/
 Stamp HapticDeviceClient::getLastInputStamp()
 {
-    LockGuard lg(mutex);
+    std::lock_guard lg(mutex);
     return stamp;
 }
-

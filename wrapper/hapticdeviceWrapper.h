@@ -11,16 +11,16 @@
 #define __HAPTICDEVICE_WRAPPER__
 
 #include <string>
+#include <mutex>
 
-#include <yarp/os/RateThread.h>
+#include <yarp/os/PeriodicThread.h>
 #include <yarp/os/PortReader.h>
 #include <yarp/os/RpcServer.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Stamp.h>
-#include <yarp/os/Mutex.h>
 #include <yarp/dev/DeviceDriver.h>
-#include <yarp/dev/Wrapper.h>
+#include <yarp/dev/IMultipleWrapper.h>
 #include <yarp/dev/IHapticDevice.h>
 #include <yarp/sig/Vector.h>
 
@@ -29,7 +29,7 @@
  */
 class HapticDeviceWrapper : public yarp::dev::DeviceDriver,
                             public yarp::dev::IMultipleWrapper,
-                            public yarp::os::RateThread,
+                            public yarp::os::PeriodicThread,
                             public yarp::os::PortReader
 {
 protected:
@@ -39,8 +39,8 @@ protected:
     yarp::os::BufferedPort<yarp::os::Bottle> statePort;
     yarp::os::BufferedPort<yarp::os::Bottle> feedbackPort;
     yarp::os::RpcServer                      rpcPort;
-    
-    yarp::os::Mutex mutex;
+
+    std::mutex mutex;
     yarp::os::Stamp stamp;
 
     yarp::dev::PolyDriver driver;
@@ -69,5 +69,3 @@ public:
 };
 
 #endif
-
-

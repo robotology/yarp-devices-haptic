@@ -2,10 +2,10 @@
 # Authors: Ugo Pattacini <ugo.pattacini@iit.it>
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.19)
 project(haptic-devices)
 
-find_package(YARP 3.2 REQUIRED)
+find_package(YARP 3.12 REQUIRED)
 
 set(BUILD_SHARED_LIBS TRUE)
 
