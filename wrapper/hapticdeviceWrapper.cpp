@@ -51,25 +51,6 @@ bool HapticDeviceWrapper::open(Searchable &config)
                             Value(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD)).asInt32();
     setPeriod(period);
 
-    if (config.check("subdevice"))
-    {
-        Property p(config.toString().c_str());
-        p.unput("device");
-        p.put("device",config.find("subdevice").asString());
-
-        if (driver.open(p))
-        {
-            IHapticDevice *d;
-            driver.view(d);
-            attach(d);
-        }
-        else
-        {
-            yError("*** Haptic Device Wrapper: failed to open the driver!");
-            return false;
-        }
-    }
-
     if (verbosity>0)
         yInfo("*** Haptic Device Wrapper: opened");
 
@@ -101,39 +82,11 @@ bool HapticDeviceWrapper::close()
 
 
 /*********************************************************************/
-void HapticDeviceWrapper::attach(IHapticDevice *dev)
+bool HapticDeviceWrapper::attach(PolyDriver *dev)
 {
-    device=dev;
-
-    start();
-    if (verbosity>0)
-        yInfo("*** Haptic Device Wrapper: started");
-}
-
-
-/*********************************************************************/
-void HapticDeviceWrapper::detach()
-{
-    device=NULL;
-}
-
-
-/*********************************************************************/
-bool HapticDeviceWrapper::attachAll(const PolyDriverList &p)
-{
-    if (p.size()!=1)
+    if (!dev || !dev->isValid() || !dev->view(device)) 
     {
-        yError("*** Haptic Device Wrapper: cannot attach more than one device");
-        return false;
-    }
-
-    PolyDriver *dev=p[0]->poly;
-    if (dev->isValid())
-        dev->view(device);
-
-    if (device==NULL)
-    {
-        yError("*** Haptic Device Wrapper: invalid device");
+        yError("Cannot view IHapticDevice");
         return false;
     }
 
@@ -146,12 +99,11 @@ bool HapticDeviceWrapper::attachAll(const PolyDriverList &p)
 
 
 /*********************************************************************/
-bool HapticDeviceWrapper::detachAll()
+bool HapticDeviceWrapper::detach()
 {
-    device=NULL;
+    device=nullptr;
     return true;
 }
-
 
 /*********************************************************************/
 bool HapticDeviceWrapper::read(ConnectionReader &connection)

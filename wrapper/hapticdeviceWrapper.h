@@ -20,7 +20,7 @@
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Stamp.h>
 #include <yarp/dev/DeviceDriver.h>
-#include <yarp/dev/IMultipleWrapper.h>
+#include <yarp/dev/WrapperSingle.h>
 #include <yarp/dev/IHapticDevice.h>
 #include <yarp/sig/Vector.h>
 
@@ -28,7 +28,7 @@
  * Haptic Device wrapper
  */
 class HapticDeviceWrapper : public yarp::dev::DeviceDriver,
-                            public yarp::dev::IMultipleWrapper,
+                            public yarp::dev::WrapperSingle,
                             public yarp::os::PeriodicThread,
                             public yarp::os::PortReader
 {
@@ -49,23 +49,20 @@ protected:
     yarp::sig::Vector fdbck;
     bool applyFdbck;
 
-    bool read(yarp::os::ConnectionReader &connection);
-    bool threadInit();
-    void threadRelease();
-    void run();
+    bool read(yarp::os::ConnectionReader &connection) override;
+    bool threadInit() override;
+    void threadRelease() override;
+    void run() override;
 
 public:
     HapticDeviceWrapper();
-    ~HapticDeviceWrapper();
+    ~HapticDeviceWrapper() override;
 
-    bool open(yarp::os::Searchable &config);
-    bool close();
+    bool open(yarp::os::Searchable &config) override;
+    bool close() override;
 
-    void attach(yarp::dev::IHapticDevice *dev);
-    void detach();
-
-    bool attachAll(const yarp::dev::PolyDriverList &p);
-    bool detachAll();
+    bool attach(yarp::dev::PolyDriver *dev) override;
+    bool detach() override;
 };
 
 #endif
