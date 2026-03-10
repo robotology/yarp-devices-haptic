@@ -17,7 +17,7 @@
 #include "common.h"
 
 #define HAPTICDEVICE_WRAPPER_DEFAULT_NAME       "hapticdevice"
-#define HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD     20          // [ms]
+#define HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD     0.02 // [s]
 
 using namespace std;
 using namespace yarp::os;
@@ -48,7 +48,7 @@ bool HapticDeviceWrapper::open(Searchable &config)
                               Value(HAPTICDEVICE_WRAPPER_DEFAULT_NAME)).asString().c_str();
     verbosity=config.check("verbosity",Value(0)).asInt32();
     int period=config.check("period",
-                            Value(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD)).asInt32();
+                            Value(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD)).asFloat64();
     setPeriod(period);
 
     if (verbosity>0)
