@@ -41,7 +41,7 @@ protected:
     IVelocityControl2 *ivel;
     IGazeControl      *igaze;
     IHapticDevice     *igeo;
-    
+
     BufferedPort<Bottle> forceFbPort;
     RpcClient simPort;
 
@@ -80,12 +80,12 @@ public:
         string name=rf.check("name",Value("teleop-icub")).asString().c_str();
         string robot=rf.check("robot",Value("icub")).asString().c_str();
         string geomagic=rf.check("geomagic",Value("geomagic")).asString().c_str();
-        double Tp2p=rf.check("Tp2p",Value(1.0)).asDouble();
+        double Tp2p=rf.check("Tp2p",Value(1.0)).asFloat64();
         part=rf.check("part",Value("right_arm")).asString().c_str();
         simulator=rf.check("simulator",Value("off")).asString()=="on";
         gaze=rf.check("gaze",Value("off")).asString()=="on";
-        minForce=fabs(rf.check("min-force-feedback",Value(3.0)).asDouble());
-        maxForce=fabs(rf.check("max-force-feedback",Value(15.0)).asDouble());
+        minForce=fabs(rf.check("min-force-feedback",Value(3.0)).asFloat64());
+        maxForce=fabs(rf.check("max-force-feedback",Value(15.0)).asFloat64());
         bool torso=rf.check("torso",Value("on")).asString()=="on";
 
         Property optGeo("(device hapticdeviceclient)");
@@ -130,7 +130,7 @@ public:
             if (simulator)
                 simPort.close();
             if (gaze)
-                drvGaze.close();            
+                drvGaze.close();
             return false;
         }
         drvCart.view(iarm);
@@ -162,7 +162,7 @@ public:
             dof[1]=0.0;
         iarm->setDOF(dof,dof);
         iarm->setTrajTime(Tp2p);
-        
+
         Vector accs,poss;
         for (int i=0; i<9; i++)
         {
@@ -174,7 +174,7 @@ public:
         }
         poss[0]=20.0;
         poss[1]=70.0;
-        
+
         imod->setControlModes(joints.size(),joints.getFirst(),modes.getFirst());
         ipos->setRefAccelerations(joints.size(),joints.getFirst(),accs.data());
         ipos->setRefSpeeds(joints.size(),joints.getFirst(),vels.data());
@@ -190,11 +190,11 @@ public:
             vels.push_back(40.0);
         }
         vels[vels.length()-1]=100.0;
-        
+
         s0=s1=idle;
         c0=c1=0;
         onlyXYZ=true;
-        
+
         stateStr[idle]="idle";
         stateStr[triggered]="triggered";
         stateStr[running]="running";
@@ -207,7 +207,7 @@ public:
         igeo->setTransformation(SE3inv(T));
         igeo->setCartesianForceMode();
         igeo->getMaxFeedback(maxFeedback);
-        
+
         Tsim=zeros(4,4);
         Tsim(0,1)=-1.0;
         Tsim(1,2)=1.0;  Tsim(1,3)=0.5976;
@@ -226,7 +226,7 @@ public:
             cmd.addString("world");
             cmd.addString("mk");
             cmd.addString("ssph");
-                
+
             // radius
             cmd.addDouble(0.02);
 
@@ -234,7 +234,7 @@ public:
             cmd.addDouble(0.0);
             cmd.addDouble(0.0);
             cmd.addDouble(0.0);
-                
+
             // color
             cmd.addInt(1);
             cmd.addInt(0);
@@ -296,7 +296,7 @@ public:
         if ((c_.length()!=3) && (c_.length()!=4))
             return;
 
-        Vector c=c_;        
+        Vector c=c_;
         if (c.length()==3)
             c.push_back(1.0);
         c[3]=1.0;
@@ -462,7 +462,7 @@ public:
 
         reachingHandler(b0,pos,rpy);
         handHandler(b1);
-        
+
         if (!b0 && !b1)
         {
             if (norm(feedback)>0.0)
@@ -476,7 +476,7 @@ public:
             size_t sz=std::min(feedback.length(),(size_t)bForce->size());
             for (size_t i=0; i<sz; i++)
             {
-                feedback[i]=bForce->get(i).asDouble();
+                feedback[i]=bForce->get(i).asFloat64();
                 if ((feedback[i]>=-minForce) && (feedback[i]<=minForce))
                     feedback[i]=0.0;
                 else if (feedback[i]<=-maxForce)
@@ -516,5 +516,3 @@ int main(int argc,char *argv[])
     TeleOp teleop;
     return teleop.runModule(rf);
 }
-
-

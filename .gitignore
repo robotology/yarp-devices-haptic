@@ -28,4 +28,6 @@
 *.app
 
 #build folder
-build
+build*/
+.vscode/
+.cache/

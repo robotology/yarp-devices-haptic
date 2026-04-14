@@ -10,13 +10,14 @@
 #ifndef __HAPTICDEVICE_CLIENT__
 #define __HAPTICDEVICE_CLIENT__
 
+#include <mutex>
+
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Stamp.h>
-#include <yarp/os/Mutex.h>
 #include <yarp/dev/DeviceDriver.h>
-#include <yarp/dev/PreciselyTimed.h>
+#include <yarp/dev/IPreciselyTimed.h>
 #include <yarp/dev/IHapticDevice.h>
 #include <yarp/sig/Vector.h>
 #include <yarp/sig/Matrix.h>
@@ -48,17 +49,17 @@ class HapticDeviceClient : public yarp::dev::DeviceDriver,
                            public yarp::dev::IPreciselyTimed,
                            public yarp::dev::IHapticDevice
 {
-protected:    
+protected:
     int verbosity;
 
     friend StatePort;
     StatePort                                statePort;
     yarp::os::BufferedPort<yarp::os::Bottle> feedbackPort;
-    yarp::os::RpcClient                      rpcPort;    
-    
+    yarp::os::RpcClient                      rpcPort;
+
     yarp::sig::Vector state;
     yarp::os::Stamp stamp;
-    yarp::os::Mutex mutex;
+    std::mutex mutex;
 
 public:
     HapticDeviceClient();
@@ -85,5 +86,3 @@ public:
 };
 
 #endif
-
-

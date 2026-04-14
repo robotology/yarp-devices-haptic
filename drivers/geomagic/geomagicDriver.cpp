@@ -41,7 +41,7 @@ bool GeomagicDriver::open(Searchable &config)
 
     if (!configured)
     {
-        verbosity=config.check("verbosity",Value(0)).asInt();
+        verbosity=config.check("verbosity",Value(0)).asInt32();
         if (verbosity>0)
             yInfo("*** Geomagic Driver: opened");
         name=config.check("device-id",
@@ -302,7 +302,7 @@ bool GeomagicDriver::stopFeedback()
     hDeviceData.m_forceValues[0]=0.0;
     hDeviceData.m_forceValues[1]=0.0;
     hDeviceData.m_forceValues[2]=0.0;
-    
+
     return writeSuccessful;
 }
 
@@ -412,19 +412,19 @@ GeomagicDriver::updateDeviceCallback(void *pUserData)
 
     /* Retrieve the current button(s). */
     hdGetIntegerv(HD_CURRENT_BUTTONS, &nButtons);
-    
+
     /* In order to get the specific button 1 state, we use a bitmask to
        test for the HD_DEVICE_BUTTON_1 bit. */
-    pDeviceData->m_button1State = 
+    pDeviceData->m_button1State =
         (nButtons & HD_DEVICE_BUTTON_1) ? HD_TRUE : HD_FALSE;
- 
+
     /* In order to get the specific button 2 state, we use a bitmask to
        test for the HD_DEVICE_BUTTON_2 bit. */
-    pDeviceData->m_button2State = 
+    pDeviceData->m_button2State =
         (nButtons & HD_DEVICE_BUTTON_2) ? HD_TRUE : HD_FALSE;
- 
+
     /* Get the current location of the device (HD_GET_CURRENT_POSITION)
-       We declare a vector of three doubles since hdGetDoublev returns 
+       We declare a vector of three doubles since hdGetDoublev returns
        the information in a vector of size 3. */
     hdGetDoublev(HD_CURRENT_POSITION, pDeviceData->m_devicePosition);
 
@@ -444,7 +444,7 @@ GeomagicDriver::updateDeviceCallback(void *pUserData)
     /* Copy the position into our device_data tructure. */
     hdEndFrame(hdGetCurrentDevice());
 
-    return HD_CALLBACK_CONTINUE;    
+    return HD_CALLBACK_CONTINUE;
 }
 
 
@@ -471,4 +471,3 @@ GeomagicDriver::updateMotorForceDataCallback(void *pUserData)
     pThis->innerDeviceData.m_forceValues[2]=pThis->hDeviceData.m_forceValues[2];
     return HD_CALLBACK_DONE;
 }
-

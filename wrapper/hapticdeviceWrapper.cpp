@@ -7,8 +7,9 @@
  *
  */
 
+#include <mutex>
+
 #include <yarp/os/Log.h>
-#include <yarp/os/LockGuard.h>
 #include <yarp/sig/Matrix.h>
 #include <yarp/math/Math.h>
 
@@ -16,7 +17,7 @@
 #include "common.h"
 
 #define HAPTICDEVICE_WRAPPER_DEFAULT_NAME       "hapticdevice"
-#define HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD     20          // [ms]
+#define HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD     0.02 // [s]
 
 using namespace std;
 using namespace yarp::os;
@@ -26,7 +27,7 @@ using namespace yarp::math;
 
 /*********************************************************************/
 HapticDeviceWrapper::HapticDeviceWrapper() :
-                     RateThread(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD),
+                     PeriodicThread(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD),
                      device(NULL), applyFdbck(false), fdbck(3,0.0)
 {
 }
@@ -45,30 +46,10 @@ bool HapticDeviceWrapper::open(Searchable &config)
 {
     portStemName=config.check("name",
                               Value(HAPTICDEVICE_WRAPPER_DEFAULT_NAME)).asString().c_str();
-    verbosity=config.check("verbosity",Value(0)).asInt();
+    verbosity=config.check("verbosity",Value(0)).asInt32();
     int period=config.check("period",
-                            Value(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD)).asInt();
-    setRate(period);
-
-    if (config.check("subdevice"))
-    {
-        Property p(config.toString().c_str());
-        p.setMonitor(config.getMonitor(),"subdevice");
-        p.unput("device");
-        p.put("device",config.find("subdevice").asString());
-
-        if (driver.open(p))
-        {
-            IHapticDevice *d;
-            driver.view(d);
-            attach(d);
-        }
-        else
-        {
-            yError("*** Haptic Device Wrapper: failed to open the driver!");
-            return false;
-        }
-    }    
+                            Value(HAPTICDEVICE_WRAPPER_DEFAULT_PERIOD)).asFloat64();
+    setPeriod(period);
 
     if (verbosity>0)
         yInfo("*** Haptic Device Wrapper: opened");
@@ -80,7 +61,7 @@ bool HapticDeviceWrapper::open(Searchable &config)
 /*********************************************************************/
 bool HapticDeviceWrapper::close()
 {
-    LockGuard lg(mutex);
+    std::lock_guard lg(mutex);
     if (isRunning())
     {
         askToStop();
@@ -92,7 +73,7 @@ bool HapticDeviceWrapper::close()
 
     if (driver.isValid())
         driver.close();
-    
+
     if (verbosity>0)
         yInfo("*** Haptic Device Wrapper: closed");
 
@@ -101,57 +82,28 @@ bool HapticDeviceWrapper::close()
 
 
 /*********************************************************************/
-void HapticDeviceWrapper::attach(IHapticDevice *dev)
+bool HapticDeviceWrapper::attach(PolyDriver *dev)
 {
-    device=dev;
-
-    start();
-    if (verbosity>0)
-        yInfo("*** Haptic Device Wrapper: started");
-}
-
-
-/*********************************************************************/
-void HapticDeviceWrapper::detach()
-{
-    device=NULL;
-}
-
-
-/*********************************************************************/
-bool HapticDeviceWrapper::attachAll(const PolyDriverList &p)
-{
-    if (p.size()!=1)
+    if (!dev || !dev->isValid() || !dev->view(device)) 
     {
-        yError("*** Haptic Device Wrapper: cannot attach more than one device");
-        return false;
-    }
-
-    PolyDriver *dev=p[0]->poly;
-    if (dev->isValid())
-        dev->view(device);
-
-    if (device==NULL)
-    {
-        yError("*** Haptic Device Wrapper: invalid device"); 
+        yError("Cannot view IHapticDevice");
         return false;
     }
 
     start();
     if (verbosity>0)
         yInfo("*** Haptic Device Wrapper: started");
-    
+
     return true;
 }
 
 
 /*********************************************************************/
-bool HapticDeviceWrapper::detachAll()
+bool HapticDeviceWrapper::detach()
 {
-    device=NULL;
+    device=nullptr;
     return true;
 }
-
 
 /*********************************************************************/
 bool HapticDeviceWrapper::read(ConnectionReader &connection)
@@ -159,12 +111,12 @@ bool HapticDeviceWrapper::read(ConnectionReader &connection)
     Bottle cmd;
     if (!cmd.read(connection))
         return false;
-    int tag=cmd.get(0).asVocab();
+    int tag=cmd.get(0).asVocab32();
 
     Bottle rep;
     if (device!=NULL)
     {
-        LockGuard lg(mutex);
+        std::lock_guard lg(mutex);
 
         if (tag==hapticdevice::set_transformation)
         {
@@ -172,19 +124,19 @@ bool HapticDeviceWrapper::read(ConnectionReader &connection)
             {
                 if (Bottle *payload=cmd.get(1).asList())
                 {
-                    Matrix T(payload->get(0).asInt(),
-                             payload->get(1).asInt());
-            
+                    Matrix T(payload->get(0).asInt32(),
+                             payload->get(1).asInt32());
+
                     if (Bottle *vals=payload->get(2).asList())
                     {
                         for (int r=0; r<T.rows(); r++)
                             for (int c=0; c<T.cols(); c++)
-                                T(r,c)=vals->get(T.rows()*r+c).asDouble();
-            
+                                T(r,c)=vals->get(T.rows()*r+c).asFloat64();
+
                         if (device->setTransformation(T))
-                            rep.addVocab(hapticdevice::ack);
+                            rep.addVocab32(hapticdevice::ack);
                         else
-                            rep.addVocab(hapticdevice::nack);
+                            rep.addVocab32(hapticdevice::nack);
                     }
                 }
             }
@@ -194,55 +146,55 @@ bool HapticDeviceWrapper::read(ConnectionReader &connection)
             Matrix T;
             if (device->getTransformation(T))
             {
-                rep.addVocab(hapticdevice::ack);
+                rep.addVocab32(hapticdevice::ack);
                 rep.addList().read(T);
             }
             else
-                rep.addVocab(hapticdevice::nack);
+                rep.addVocab32(hapticdevice::nack);
         }
         else if (tag==hapticdevice::stop_feedback)
         {
             fdbck=0.0;
             device->stopFeedback();
             applyFdbck=false;
-            rep.addVocab(hapticdevice::ack);
+            rep.addVocab32(hapticdevice::ack);
         }
         else if (tag==hapticdevice::is_cartesian)
         {
             bool ret;
             if (device->isCartesianForceModeEnabled(ret))
             {
-                rep.addVocab(hapticdevice::ack);
-                rep.addInt(ret?1:0);
+                rep.addVocab32(hapticdevice::ack);
+                rep.addInt32(ret?1:0);
             }
             else
-                rep.addVocab(hapticdevice::nack);
+                rep.addVocab32(hapticdevice::nack);
         }
         else if (tag==hapticdevice::set_cartesian)
         {
-            rep.addVocab(device->setCartesianForceMode()?
+            rep.addVocab32(device->setCartesianForceMode()?
                          hapticdevice::ack:hapticdevice::nack);
         }
         else if (tag==hapticdevice::set_joint)
         {
-            rep.addVocab(device->setJointTorqueMode()?
+            rep.addVocab32(device->setJointTorqueMode()?
                          hapticdevice::ack:hapticdevice::nack);
         }
         else if (tag==hapticdevice::get_max)
         {
             Vector max;
             if (device->getMaxFeedback(max))
-            {               
-                rep.addVocab(hapticdevice::ack);
-                rep.addList().read(max);                
+            {
+                rep.addVocab32(hapticdevice::ack);
+                rep.addList().read(max);
             }
             else
-                rep.addVocab(hapticdevice::nack);
+                rep.addVocab32(hapticdevice::nack);
         }
     }
 
     if (rep.size()==0)
-        rep.addVocab(hapticdevice::nack);
+        rep.addVocab32(hapticdevice::nack);
 
     ConnectionWriter *writer=connection.getWriter();
     if (writer!=NULL)
@@ -282,13 +234,13 @@ void HapticDeviceWrapper::run()
 {
     if (device!=NULL)
     {
-        LockGuard lg(mutex);
+        std::lock_guard lg(mutex);
 
         Vector pos,rpy,buttons;
         device->getPosition(pos);
         device->getOrientation(rpy);
         device->getButtons(buttons);
-        
+
         Vector output=cat(cat(pos,rpy),buttons);
         statePort.prepare().read(output);
 
@@ -300,9 +252,9 @@ void HapticDeviceWrapper::run()
         {
             if (fdbck->size()>=3)
             {
-                this->fdbck[0]=fdbck->get(0).asDouble();
-                this->fdbck[1]=fdbck->get(1).asDouble();
-                this->fdbck[2]=fdbck->get(2).asDouble();
+                this->fdbck[0]=fdbck->get(0).asFloat64();
+                this->fdbck[1]=fdbck->get(1).asFloat64();
+                this->fdbck[2]=fdbck->get(2).asFloat64();
             }
 
             applyFdbck=true;
@@ -312,4 +264,3 @@ void HapticDeviceWrapper::run()
             device->setFeedback(fdbck);
     }
 }
-
