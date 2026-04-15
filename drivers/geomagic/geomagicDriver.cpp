@@ -177,13 +177,13 @@ bool GeomagicDriver::getPosition(Vector &pos)
         return false;
 
     pos.resize(4);
-    std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    pos[0]=0.001*hDeviceData.m_devicePosition[0];
-    pos[1]=0.001*hDeviceData.m_devicePosition[1];
-    pos[2]=0.001*hDeviceData.m_devicePosition[2];
-    pos[3]=1.0;
 
-    pos=T*pos;
+    std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
+    pos[0] = 0.001 * hDeviceData.m_transform[12];
+    pos[1] = 0.001 * hDeviceData.m_transform[13];
+    pos[2] = 0.001 * hDeviceData.m_transform[14];
+    pos[3] = 1.0;
+    pos = T * pos;
     pos.pop_back();
 
     return true;
@@ -198,13 +198,32 @@ bool GeomagicDriver::getOrientation(Vector &rpy)
 
     rpy.resize(3);
     std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    rpy[0]=hDeviceData.m_gimbalAngles[0];
-    rpy[1]=hDeviceData.m_gimbalAngles[1];
-    rpy[2]=hDeviceData.m_gimbalAngles[2];
+
+    const double* m = hDeviceData.m_transform;
+
+    yarp::sig::Matrix R(3, 3);
+
+    R(0, 0) = m[0];
+    R(0, 1) = m[4];
+    R(0, 2) = m[8];
+
+    R(1, 0) = m[1];
+    R(1, 1) = m[5];
+    R(1, 2) = m[9];
+
+    R(2, 0) = m[2];
+    R(2, 1) = m[6];
+    R(2, 2) = m[10];
+
+    rpy = yarp::math::dcm2rpy(R);
+    static constexpr double RAD2DEG = 180.0 / M_PI;
+
+    rpy[0] *= RAD2DEG;
+    rpy[1] *= RAD2DEG;
+    rpy[2] *= RAD2DEG;
 
     return true;
 }
-
 
 /*********************************************************************/
 bool GeomagicDriver::getButtons(Vector &buttons)
@@ -423,15 +442,10 @@ GeomagicDriver::updateDeviceCallback(void *pUserData)
     pDeviceData->m_button2State =
         (nButtons & HD_DEVICE_BUTTON_2) ? HD_TRUE : HD_FALSE;
 
-    /* Get the current location of the device (HD_GET_CURRENT_POSITION)
-       We declare a vector of three doubles since hdGetDoublev returns
-       the information in a vector of size 3. */
-    hdGetDoublev(HD_CURRENT_POSITION, pDeviceData->m_devicePosition);
-
-    /* Get the angles of the device gimbal. For Touch
-       devices: From Neutral position Right is +, Up is -,
-       CW is + . */
-    hdGetDoublev(HD_CURRENT_GIMBAL_ANGLES, pDeviceData->m_gimbalAngles);
+    /* Get the current transform of the device (HD_GET_CURRENT_TRANSFORM)
+       We declare a vector of 16 doubles since hdGetDoublev returns
+       the information in a vector of size 16. */
+    hdGetDoublev(HD_CURRENT_TRANSFORM, pDeviceData->m_transform);
 
     if (pDeviceData->m_isForce)
         hdSetDoublev(HD_CURRENT_FORCE, pDeviceData->m_forceValues);
