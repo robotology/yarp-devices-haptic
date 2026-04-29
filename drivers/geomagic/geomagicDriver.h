@@ -32,17 +32,24 @@ typedef struct
 {
     HDboolean m_button1State;      /* Has the device button has been pressed. */
     HDboolean m_button2State;      /* Has the device button has been pressed. */
-    hduVector3Dd m_devicePosition; /* Current device coordinates in mm. */
-    hduVector3Dd m_gimbalAngles;   /* Gimbal Angles in rad.*/
     bool m_isForce;                /* Force or Torque Mode */
     hduVector3Dd m_forceValues;    /* Current force as Cartesian
-                                      coordinated vector in N. 
+                                      coordinated vector in N.
                                                 OR
-                                      mNm : milli newton meters torque 
+                                      mNm : milli newton meters torque
                                       for first 3 joints */
+    HDdouble m_transform[16];
     HDErrorInfo m_error;
 
 } DeviceData;
+
+/**
+ * Data sent to the HDAPI.
+ */
+typedef struct {
+    bool m_isForce;                /* Force or Torque Mode */
+    hduVector3Dd m_forceValues;
+} SentToDeviceData;
 
 
 /**
@@ -66,9 +73,10 @@ protected:
     // Geomagic Touch Device HD library variables
     HHD hHD;
     HDSchedulerHandle hUpdateHandle;
-    DeviceData hDeviceData;
+    DeviceData hDeviceDataSensor;
     std::mutex hDeviceDataSensorMutex;
     std::mutex hDeviceDataForceMutex;
+    SentToDeviceData hDeviceDataForce;
     DeviceData innerDeviceData;
     // False if there was an error in reading from Geomagic
     std::atomic<bool> readSuccessful{false};
@@ -104,7 +112,7 @@ public:
     bool getOrientation(yarp::sig::Vector &rpy);
     bool getButtons(yarp::sig::Vector &buttons);
     bool isCartesianForceModeEnabled(bool &ret);
-    bool setCartesianForceMode(); 
+    bool setCartesianForceMode();
     bool setJointTorqueMode();
     bool getMaxFeedback(yarp::sig::Vector &max);
     bool setFeedback(const yarp::sig::Vector &fdbck);
@@ -114,4 +122,3 @@ public:
 };
 
 #endif
-

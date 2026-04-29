@@ -108,7 +108,7 @@ bool GeomagicDriver::open(Searchable &config)
         }
 
         hdEnable(HD_FORCE_OUTPUT);
-        hDeviceData.m_isForce = true;
+        hDeviceDataForce.m_isForce = true;
         if (verbosity>0)
             yInfo("*** Geomagic Driver: Cartesian Force mode enabled");
 
@@ -177,13 +177,13 @@ bool GeomagicDriver::getPosition(Vector &pos)
         return false;
 
     pos.resize(4);
-    std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    pos[0]=0.001*hDeviceData.m_devicePosition[0];
-    pos[1]=0.001*hDeviceData.m_devicePosition[1];
-    pos[2]=0.001*hDeviceData.m_devicePosition[2];
-    pos[3]=1.0;
 
-    pos=T*pos;
+    std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
+    pos[0] = 0.001 * hDeviceDataSensor.m_transform[12];
+    pos[1] = 0.001 * hDeviceDataSensor.m_transform[13];
+    pos[2] = 0.001 * hDeviceDataSensor.m_transform[14];
+    pos[3] = 1.0;
+    pos = T * pos;
     pos.pop_back();
 
     return true;
@@ -198,13 +198,32 @@ bool GeomagicDriver::getOrientation(Vector &rpy)
 
     rpy.resize(3);
     std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    rpy[0]=hDeviceData.m_gimbalAngles[0];
-    rpy[1]=hDeviceData.m_gimbalAngles[1];
-    rpy[2]=hDeviceData.m_gimbalAngles[2];
+
+    const double* m = hDeviceDataSensor.m_transform;
+
+    yarp::sig::Matrix R(3, 3);
+
+    R(0, 0) = m[0];
+    R(0, 1) = m[4];
+    R(0, 2) = m[8];
+
+    R(1, 0) = m[1];
+    R(1, 1) = m[5];
+    R(1, 2) = m[9];
+
+    R(2, 0) = m[2];
+    R(2, 1) = m[6];
+    R(2, 2) = m[10];
+
+    rpy = yarp::math::dcm2rpy(R);
+    static constexpr double RAD2DEG = 180.0 / M_PI;
+
+    rpy[0] *= RAD2DEG;
+    rpy[1] *= RAD2DEG;
+    rpy[2] *= RAD2DEG;
 
     return true;
 }
-
 
 /*********************************************************************/
 bool GeomagicDriver::getButtons(Vector &buttons)
@@ -214,8 +233,8 @@ bool GeomagicDriver::getButtons(Vector &buttons)
 
     buttons.resize(2);
     std::lock_guard<std::mutex> lock(hDeviceDataSensorMutex);
-    buttons[0]=hDeviceData.m_button1State;
-    buttons[1]=hDeviceData.m_button2State;
+    buttons[0]=hDeviceDataSensor.m_button1State;
+    buttons[1]=hDeviceDataSensor.m_button2State;
 
     return true;
 }
@@ -225,7 +244,7 @@ bool GeomagicDriver::getButtons(Vector &buttons)
 bool GeomagicDriver::isCartesianForceModeEnabled(bool &ret)
 {
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    ret=hDeviceData.m_isForce;
+    ret=hDeviceDataForce.m_isForce;
     return true;
 }
 
@@ -236,7 +255,7 @@ bool GeomagicDriver::setCartesianForceMode()
     if (verbosity>0)
         yInfo("*** Geomagic Driver: Cartesian Force mode enabled");
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    hDeviceData.m_isForce=true;
+    hDeviceDataForce.m_isForce=true;
     return true;
 }
 
@@ -247,7 +266,7 @@ bool GeomagicDriver::setJointTorqueMode()
     if (verbosity>0)
         yInfo("*** Geomagic Driver: Joint Torque mode enabled");
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    hDeviceData.m_isForce=false;
+    hDeviceDataForce.m_isForce=false;
     return true;
 }
 
@@ -257,7 +276,7 @@ bool GeomagicDriver::getMaxFeedback(Vector &max)
 {
     max.resize(3);
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    if (hDeviceData.m_isForce) {
+    if (hDeviceDataForce.m_isForce) {
         max=maxForceMagnitude;
     }
     else {
@@ -276,19 +295,19 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
         return false;
 
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    if (hDeviceData.m_isForce) {
+    if (hDeviceDataForce.m_isForce) {
         Vector fdbck_=fdbck;
         fdbck_.push_back(1.0);
         fdbck_=SE3inv(T)*fdbck_;
 
-        hDeviceData.m_forceValues[0]=sat(fdbck_[0],maxForceMagnitude);
-        hDeviceData.m_forceValues[1]=sat(fdbck_[1],maxForceMagnitude);
-        hDeviceData.m_forceValues[2]=sat(fdbck_[2],maxForceMagnitude);
+        hDeviceDataForce.m_forceValues[0]=sat(fdbck_[0],maxForceMagnitude);
+        hDeviceDataForce.m_forceValues[1]=sat(fdbck_[1],maxForceMagnitude);
+        hDeviceDataForce.m_forceValues[2]=sat(fdbck_[2],maxForceMagnitude);
     }
     else {
-        hDeviceData.m_forceValues[0]=sat(fdbck[0],MAX_JOINT_TORQUE_0);
-        hDeviceData.m_forceValues[1]=sat(fdbck[1],MAX_JOINT_TORQUE_1);
-        hDeviceData.m_forceValues[2]=sat(fdbck[2],MAX_JOINT_TORQUE_2);
+        hDeviceDataForce.m_forceValues[0]=sat(fdbck[0],MAX_JOINT_TORQUE_0);
+        hDeviceDataForce.m_forceValues[1]=sat(fdbck[1],MAX_JOINT_TORQUE_1);
+        hDeviceDataForce.m_forceValues[2]=sat(fdbck[2],MAX_JOINT_TORQUE_2);
     }
 
     return writeSuccessful;
@@ -299,9 +318,9 @@ bool GeomagicDriver::setFeedback(const Vector &fdbck)
 bool GeomagicDriver::stopFeedback()
 {
     std::lock_guard<std::mutex> lock(hDeviceDataForceMutex);
-    hDeviceData.m_forceValues[0]=0.0;
-    hDeviceData.m_forceValues[1]=0.0;
-    hDeviceData.m_forceValues[2]=0.0;
+    hDeviceDataForce.m_forceValues[0]=0.0;
+    hDeviceDataForce.m_forceValues[1]=0.0;
+    hDeviceDataForce.m_forceValues[2]=0.0;
 
     return writeSuccessful;
 }
@@ -423,15 +442,10 @@ GeomagicDriver::updateDeviceCallback(void *pUserData)
     pDeviceData->m_button2State =
         (nButtons & HD_DEVICE_BUTTON_2) ? HD_TRUE : HD_FALSE;
 
-    /* Get the current location of the device (HD_GET_CURRENT_POSITION)
-       We declare a vector of three doubles since hdGetDoublev returns
-       the information in a vector of size 3. */
-    hdGetDoublev(HD_CURRENT_POSITION, pDeviceData->m_devicePosition);
-
-    /* Get the angles of the device gimbal. For Touch
-       devices: From Neutral position Right is +, Up is -,
-       CW is + . */
-    hdGetDoublev(HD_CURRENT_GIMBAL_ANGLES, pDeviceData->m_gimbalAngles);
+    /* Get the current transform of the device (HD_GET_CURRENT_TRANSFORM)
+       We declare a vector of 16 doubles since hdGetDoublev returns
+       the information in a vector of size 16. */
+    hdGetDoublev(HD_CURRENT_TRANSFORM, pDeviceData->m_transform);
 
     if (pDeviceData->m_isForce)
         hdSetDoublev(HD_CURRENT_FORCE, pDeviceData->m_forceValues);
@@ -454,7 +468,7 @@ GeomagicDriver::copyDeviceDataCallback(void *pUserData)
 {
     GeomagicDriver *pThis = static_cast<GeomagicDriver *>(pUserData);
     std::lock_guard<std::mutex> lock(pThis->hDeviceDataSensorMutex);
-    memcpy(&pThis->hDeviceData, &pThis->innerDeviceData, sizeof(DeviceData));
+    memcpy(&pThis->hDeviceDataSensor, &pThis->innerDeviceData, sizeof(DeviceData));
     return HD_CALLBACK_DONE;
 }
 
@@ -465,9 +479,9 @@ GeomagicDriver::updateMotorForceDataCallback(void *pUserData)
 {
     GeomagicDriver *pThis = static_cast<GeomagicDriver *>(pUserData);
     std::lock_guard<std::mutex> lock(pThis->hDeviceDataForceMutex);
-    pThis->innerDeviceData.m_isForce=pThis->hDeviceData.m_isForce;
-    pThis->innerDeviceData.m_forceValues[0]=pThis->hDeviceData.m_forceValues[0];
-    pThis->innerDeviceData.m_forceValues[1]=pThis->hDeviceData.m_forceValues[1];
-    pThis->innerDeviceData.m_forceValues[2]=pThis->hDeviceData.m_forceValues[2];
+    pThis->innerDeviceData.m_isForce=pThis->hDeviceDataForce.m_isForce;
+    pThis->innerDeviceData.m_forceValues[0]=pThis->hDeviceDataForce.m_forceValues[0];
+    pThis->innerDeviceData.m_forceValues[1]=pThis->hDeviceDataForce.m_forceValues[1];
+    pThis->innerDeviceData.m_forceValues[2]=pThis->hDeviceDataForce.m_forceValues[2];
     return HD_CALLBACK_DONE;
 }
